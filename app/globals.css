@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #fffdf6;
+  --color-ink: #1a1a1a;
+  --color-ink-soft: #3a3733;
+  --color-tarp: #ffce00;
+  --color-tarp-deep: #f0b400;
+  --color-stamp: #e23d28;
+  --color-leaf: #15803d;
+  --color-muted: #6e6a61;
+  --color-line: #1a1a1a;
+  --font-sans: var(--font-archivo), "Helvetica Neue", system-ui, sans-serif;
+  --font-stub: var(--font-courier-prime), "Courier New", monospace;
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    min-height: 100dvh;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-ink);
+    outline-offset: 2px;
+  }
+
+  button,
+  a {
+    touch-action: manipulation;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@utility leader {
+  flex: 1;
+  min-width: 1rem;
+  align-self: center;
+  border-bottom: 2px dotted var(--color-ink);
+  opacity: 0.3;
+  margin: 0 0.5rem;
+}
+
+@utility stub {
+  position: relative;
+  background: #ffffff;
+  border: 2px solid var(--color-ink);
+}
+
+@utility stub-notch {
+  position: absolute;
+  top: 50%;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 9999px;
+  background: var(--color-paper);
+  transform: translateY(-50%);
+}
+
+@utility safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
