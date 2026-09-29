@@ -1,17 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useAuth } from "@/components/auth-provider";
 import { QrImage } from "@/components/qr-image";
-import { currentProfile } from "@/lib/data/store";
-import type { Profile } from "@/lib/types";
 
 export default function ProfilePage() {
-  const [profile, setProfile] = useState<Profile | null | undefined>(undefined);
-
-  useEffect(() => {
-    setProfile(currentProfile());
-  }, []);
+  const { profile } = useAuth();
 
   if (profile === undefined) return null;
 

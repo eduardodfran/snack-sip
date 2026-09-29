@@ -56,6 +56,9 @@ export type Order = {
   paymentMethod: PaymentMethod;
   paymentStatus: PaymentStatus;
   status: OrderStatus;
+  /** Storage path in the payment-proofs bucket (private). */
+  proofPath: string | null;
+  /** Resolved signed URL — only filled in when an admin view needs it. */
   proofUrl: string | null;
   gcashReference: string | null;
   pickupSlotId: string | null;
@@ -78,4 +81,11 @@ export type Profile = {
   email: string;
   role: "customer" | "admin";
   points: number;
+};
+
+export type Redemption = {
+  id: string;
+  profileId: string;
+  label: string;
+  redeemedAt: string;
 };

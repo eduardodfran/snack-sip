@@ -3,23 +3,24 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
-import { login } from "@/lib/data/store";
+import { signIn } from "@/lib/data/api";
 
 function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
-  const next = params.get("next") ?? "/";
+  const rawNext = params.get("next") ?? "/";
+  const next = rawNext.startsWith("/") ? rawNext : "/";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setPending(true);
     try {
-      login(email, password);
+      await signIn(email, password);
       router.push(next);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not log in.");

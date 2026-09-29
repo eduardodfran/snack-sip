@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getOrders, getProducts } from "@/lib/data/store";
+import { fetchOrders, fetchProducts } from "@/lib/data/api";
 import { peso } from "@/lib/format";
 import type { Order, Product } from "@/lib/types";
 
@@ -11,8 +11,20 @@ export default function AdminDashboard() {
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    setOrders(getOrders());
-    setProducts(getProducts());
+    let cancelled = false;
+    void fetchOrders()
+      .then((list) => {
+        if (!cancelled) setOrders(list);
+      })
+      .catch(() => {});
+    void fetchProducts()
+      .then((list) => {
+        if (!cancelled) setProducts(list);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const sales = orders

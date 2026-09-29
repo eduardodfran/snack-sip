@@ -5,7 +5,12 @@ import { useEffect, useState } from "react";
 import { FoodArt } from "@/components/food-art";
 import { Scanner } from "@/components/scanner";
 import { Stub } from "@/components/stub";
-import { createOrder, getProducts, getProfile } from "@/lib/data/store";
+import {
+  createWalkIn,
+  fetchProducts,
+  fetchProfile,
+  findOrder,
+} from "@/lib/data/api";
 import { peso } from "@/lib/format";
 import type { Order, Product, Profile } from "@/lib/types";
 
@@ -20,9 +25,18 @@ export default function PosPage() {
   const [scanOpen, setScanOpen] = useState(false);
   const [error, setError] = useState("");
   const [order, setOrder] = useState<Order | null>(null);
+  const [confirming, setConfirming] = useState(false);
 
   useEffect(() => {
-    setProducts(getProducts());
+    let cancelled = false;
+    fetchProducts()
+      .then((list) => {
+        if (!cancelled) setProducts(list);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const lines = products
@@ -45,41 +59,52 @@ export default function PosPage() {
     });
   }
 
-  function handleScan(text: string) {
+  async function handleScan(text: string) {
     setScanOpen(false);
     const match = text.match(/snack-sip:account:([A-Za-z0-9-]+)/);
     if (!match) {
       setError("That QR is not an Account QR.");
       return;
     }
-    const profile = getProfile(match[1]);
-    if (!profile) {
-      setError("Account not found.");
-      return;
+    try {
+      const profile = await fetchProfile(match[1]);
+      if (!profile) {
+        setError("Account not found.");
+        return;
+      }
+      setAccount(profile);
+      setError("");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Could not look up that account.",
+      );
     }
-    setAccount(profile);
-    setError("");
   }
 
-  function confirmOrder() {
+  async function confirmOrder() {
     setError("");
+    if (confirming) return;
+    setConfirming(true);
     try {
-      const created = createOrder({
-        type: "walk_in",
+      const { id } = await createWalkIn({
+        lines: lines.map((line) => ({
+          productId: line.productId,
+          qty: line.qty,
+        })),
+        method,
         customerId: account?.id ?? null,
-        customerName: account?.name ?? null,
-        lines,
-        paymentMethod: method,
-        pickupSlotId: null,
-        pickupLabel: null,
       });
+      const created = await findOrder(id);
+      if (!created) throw new Error("Could not load the new order.");
       setOrder(created);
       setQty({});
       setAccount(null);
       setStep("done");
-      setProducts(getProducts());
+      setProducts(await fetchProducts());
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not create order.");
+    } finally {
+      setConfirming(false);
     }
   }
 
@@ -219,9 +244,14 @@ export default function PosPage() {
         <button
           type="button"
           onClick={confirmOrder}
-          className="mt-5 w-full border-2 border-ink bg-tarp py-4 text-lg font-black shadow-[4px_4px_0_0_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+          disabled={confirming}
+          className="mt-5 w-full border-2 border-ink bg-tarp py-4 text-lg font-black shadow-[4px_4px_0_0_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-50"
         >
-          {method === "cash" ? "Cash received — confirm" : "GCash verified — confirm"}
+          {confirming
+            ? "Saving…"
+            : method === "cash"
+              ? "Cash received — confirm"
+              : "GCash verified — confirm"}
         </button>
 
         {scanOpen && (

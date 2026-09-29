@@ -2,14 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import {
-  DEMO_ADMIN_EMAIL,
-  currentProfile,
-  ensureDemoAdmin,
-  login,
-} from "@/lib/data/store";
-import type { Profile } from "@/lib/types";
+import { useEffect } from "react";
+import { useAuth } from "@/components/auth-provider";
 
 const TABS = [
   { href: "/admin", label: "Dashboard" },
@@ -22,88 +16,40 @@ const TABS = [
 export default function AdminLayout({ children }: LayoutProps<"/admin">) {
   const pathname = usePathname();
   const router = useRouter();
-  const [profile, setProfile] = useState<Profile | null | undefined>(undefined);
-  const [email, setEmail] = useState(DEMO_ADMIN_EMAIL);
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const { profile } = useAuth();
+
+  const signedOut = profile === null;
+  const allowed =
+    profile !== undefined && profile !== null && profile.role === "admin";
 
   useEffect(() => {
-    ensureDemoAdmin();
-    setProfile(currentProfile());
-  }, []);
+    if (signedOut) {
+      router.replace(`/login?next=${encodeURIComponent(pathname)}`);
+    }
+  }, [signedOut, pathname, router]);
 
-  if (profile === undefined) return null;
+  if (signedOut || profile === undefined) return null;
 
-  if (!profile || profile.role !== "admin") {
+  if (!allowed) {
     return (
       <div className="flex min-h-dvh items-center justify-center px-4">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            setError("");
-            try {
-              const p = login(email, password);
-              if (p.role !== "admin") {
-                setError("That account is not an admin.");
-                return;
-              }
-              setProfile(p);
-              router.refresh();
-            } catch (err) {
-              setError(err instanceof Error ? err.message : "Could not log in.");
-            }
-          }}
-          className="w-full max-w-sm border-2 border-ink bg-white p-6 shadow-[6px_6px_0_0_#ffce00]"
-        >
+        <div className="w-full max-w-sm border-2 border-ink bg-white p-6 shadow-[6px_6px_0_0_#ffce00]">
           <p className="font-stub text-sm font-bold text-muted">
             Snack &amp; Sip
           </p>
-          <h1 className="mt-1 text-2xl font-black">Booth admin</h1>
-          <label className="mt-5 block">
-            <span className="text-sm font-bold">Email</span>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full border-2 border-ink px-3 py-2.5"
-              required
-            />
-          </label>
-          <label className="mt-3 block">
-            <span className="text-sm font-bold">Password</span>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full border-2 border-ink px-3 py-2.5"
-              required
-            />
-          </label>
-          {error && (
-            <p
-              role="alert"
-              className="mt-3 border-2 border-stamp bg-stamp/10 px-3 py-2 text-sm font-bold text-stamp"
-            >
-              {error}
-            </p>
-          )}
-          <button
-            type="submit"
-            className="mt-5 w-full border-2 border-ink bg-tarp py-3 font-black"
-          >
-            Log in
-          </button>
-          <p className="mt-4 text-xs text-muted">
-            Demo admin: {DEMO_ADMIN_EMAIL} (any password). Remove this once
-            Supabase is connected.
+          <h1 className="mt-1 text-2xl font-black">Admins only</h1>
+          <p className="mt-3 text-sm text-ink-soft">
+            You&apos;re logged in as{" "}
+            <span className="font-stub font-bold">{profile.email}</span>, which
+            isn&apos;t a booth admin account.
           </p>
           <Link
             href="/"
-            className="mt-3 block text-center text-sm font-bold underline"
+            className="mt-5 block border-2 border-ink bg-tarp py-3 text-center font-black"
           >
             Back to shop
           </Link>
-        </form>
+        </div>
       </div>
     );
   }

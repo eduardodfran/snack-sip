@@ -3,19 +3,21 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
-import { signup } from "@/lib/data/store";
+import { signUp } from "@/lib/data/api";
 
 function SignupForm() {
   const router = useRouter();
   const params = useSearchParams();
-  const next = params.get("next") ?? "/";
+  const rawNext = params.get("next") ?? "/";
+  const next = rawNext.startsWith("/") ? rawNext : "/";
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
+  const [needsConfirmation, setNeedsConfirmation] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     if (password.length < 6) {
@@ -24,12 +26,43 @@ function SignupForm() {
     }
     setPending(true);
     try {
-      signup({ name, email, password });
-      router.push(next);
+      const { needsConfirmation: confirm } = await signUp(
+        name,
+        email,
+        password,
+      );
+      if (confirm) {
+        setNeedsConfirmation(true);
+        setPending(false);
+      } else {
+        router.push(next);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not sign up.");
       setPending(false);
     }
+  }
+
+  if (needsConfirmation) {
+    return (
+      <div className="mx-auto max-w-md px-4 pt-8">
+        <h1 className="text-3xl font-black tracking-tight">Check your email</h1>
+        <div className="mt-5 border-2 border-ink bg-tarp p-5">
+          <p className="font-bold">One more step.</p>
+          <p className="mt-2 text-sm text-ink-soft">
+            We sent a confirmation link to{" "}
+            <span className="font-stub font-bold">{email}</span>. Open it, then
+            log in here.
+          </p>
+        </div>
+        <Link
+          href={`/login?next=${encodeURIComponent(next)}`}
+          className="mt-5 block border-2 border-ink bg-white py-3 text-center font-black"
+        >
+          Go to log in
+        </Link>
+      </div>
+    );
   }
 
   return (
@@ -68,6 +101,7 @@ function SignupForm() {
             type="password"
             required
             autoComplete="new-password"
+            minLength={6}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="mt-1 w-full border-2 border-ink bg-white px-3 py-3"

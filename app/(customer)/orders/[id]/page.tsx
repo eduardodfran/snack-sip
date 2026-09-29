@@ -7,7 +7,7 @@ import { QrImage } from "@/components/qr-image";
 import { Stub } from "@/components/stub";
 import { OrderChip, PaymentChip } from "@/components/status-chip";
 import { SITE_URL } from "@/lib/constants";
-import { findOrder } from "@/lib/data/store";
+import { findOrder } from "@/lib/data/api";
 import { peso, shortTime } from "@/lib/format";
 import type { Order } from "@/lib/types";
 
@@ -24,8 +24,21 @@ export default function OrderDetailPage() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    setOrder(findOrder(params.id) ?? null);
-    setLoaded(true);
+    let cancelled = false;
+    findOrder(params.id)
+      .then((found) => {
+        if (cancelled) return;
+        setOrder(found);
+        setLoaded(true);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setOrder(null);
+        setLoaded(true);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [params.id]);
 
   if (!loaded) return null;

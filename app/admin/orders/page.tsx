@@ -3,7 +3,12 @@
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { OrderChip } from "@/components/status-chip";
-import { claimOrder, getOrders, setStatus, verifyPayment } from "@/lib/data/store";
+import {
+  claimOrder,
+  fetchOrdersWithProofs,
+  setStatus,
+  verifyPayment,
+} from "@/lib/data/api";
 import { peso, shortTime } from "@/lib/format";
 import type { Order } from "@/lib/types";
 
@@ -13,15 +18,24 @@ function OrdersAdmin() {
     params.get("tab") === "queue" ? "queue" : "verify",
   );
   const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
   const [code, setCode] = useState("");
   const [message, setMessage] = useState("");
 
-  function refresh() {
-    setOrders(getOrders());
+  async function refresh() {
+    try {
+      setOrders(await fetchOrdersWithProofs());
+    } catch (err) {
+      setMessage(
+        err instanceof Error ? err.message : "Could not load orders.",
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
-    refresh();
+    void refresh();
   }, []);
 
   const toVerify = orders.filter((o) => o.paymentStatus === "for_verification");
@@ -29,33 +43,49 @@ function OrdersAdmin() {
     ["confirmed", "preparing", "ready"].includes(o.status),
   );
 
-  function handleVerify(id: string, approve: boolean) {
-    verifyPayment(id, approve);
-    refresh();
-    setMessage(approve ? "Payment verified — order confirmed." : "Marked for resubmission.");
+  async function handleVerify(id: string, approve: boolean) {
+    try {
+      await verifyPayment(id, approve);
+      await refresh();
+      setMessage(
+        approve
+          ? "Payment verified — order confirmed."
+          : "Marked for resubmission.",
+      );
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "Something went wrong.");
+    }
   }
 
-  function handleAdvance(order: Order) {
+  async function handleAdvance(order: Order) {
     const next =
       order.status === "confirmed"
         ? "preparing"
         : order.status === "preparing"
           ? "ready"
           : "completed";
-    setStatus(order.id, next);
-    refresh();
+    try {
+      await setStatus(order.id, next);
+      await refresh();
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "Something went wrong.");
+    }
   }
 
-  function handleRelease(e: React.FormEvent) {
+  async function handleRelease(e: React.FormEvent) {
     e.preventDefault();
-    const result = claimOrder(code);
-    if (result.ok) {
-      setMessage(`${result.order.orderNumber} released and completed.`);
-      setCode("");
-    } else {
-      setMessage(result.reason);
+    try {
+      const result = await claimOrder(code);
+      if (result.ok) {
+        setMessage(`${result.order.orderNumber} released and completed.`);
+        setCode("");
+      } else {
+        setMessage(result.reason);
+      }
+      await refresh();
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "Something went wrong.");
     }
-    refresh();
   }
 
   return (
@@ -92,7 +122,7 @@ function OrdersAdmin() {
 
       {tab === "verify" && (
         <section className="mt-4 grid items-start gap-4 md:grid-cols-2">
-          {toVerify.length === 0 ? (
+          {!loading && toVerify.length === 0 ? (
             <p className="border-2 border-dashed border-ink/40 p-6 text-center text-sm text-muted md:col-span-2">
               No payments waiting for verification.
             </p>
@@ -186,7 +216,7 @@ function OrdersAdmin() {
           </form>
 
           <ul className="mt-4 grid items-start gap-3 md:grid-cols-2">
-            {queue.length === 0 && (
+            {!loading && queue.length === 0 && (
               <li className="border-2 border-dashed border-ink/40 p-6 text-center text-sm text-muted md:col-span-2">
                 No active orders.
               </li>

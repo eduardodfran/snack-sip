@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, Courier_Prime } from "next/font/google";
+import { AuthProvider } from "@/components/auth-provider";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -37,7 +38,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${archivo.variable} ${courierPrime.variable} h-full antialiased`}
     >
-      <body className="min-h-dvh flex flex-col font-sans">{children}</body>
+      <body className="min-h-dvh flex flex-col font-sans">
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FoodArt } from "@/components/food-art";
-import { getProducts } from "@/lib/data/store";
-import type { Product } from "@/lib/types";
+import { fetchPickupSlots, fetchProducts } from "@/lib/data/api";
 import { PICKUP_SLOTS } from "@/lib/catalog";
+import type { PickupSlot, Product } from "@/lib/types";
 
 const WHY = [
   ["Fast pickup", "Already paid — just show your QR."],
@@ -22,9 +22,23 @@ const STEPS = [
 
 export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [slots, setSlots] = useState<PickupSlot[]>(PICKUP_SLOTS);
 
   useEffect(() => {
-    setProducts(getProducts());
+    let cancelled = false;
+    void fetchProducts()
+      .then((list) => {
+        if (!cancelled) setProducts(list);
+      })
+      .catch(() => {});
+    void fetchPickupSlots()
+      .then((list) => {
+        if (!cancelled) setSlots(list);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const anyAvailable = products.some((p) => p.active && p.stock > 0);
@@ -138,7 +152,7 @@ export default function HomePage() {
         <section className="border-b-2 border-ink bg-ink px-4 py-7 text-white md:border-b-0 md:border-r-2">
           <h2 className="text-2xl font-black text-tarp">Pickup schedule</h2>
           <ul className="mt-3 space-y-2 font-stub text-sm">
-            {PICKUP_SLOTS.map((slot) => (
+            {slots.map((slot) => (
               <li
                 key={slot.id}
                 className="flex items-baseline justify-between gap-3 border-b border-dashed border-white/30 pb-2"

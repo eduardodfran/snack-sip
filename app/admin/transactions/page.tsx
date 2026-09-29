@@ -2,15 +2,27 @@
 
 import { useEffect, useState } from "react";
 import { OrderChip, PaymentChip } from "@/components/status-chip";
-import { getOrders } from "@/lib/data/store";
+import { fetchOrders } from "@/lib/data/api";
 import { peso, shortTime } from "@/lib/format";
 import type { Order } from "@/lib/types";
 
 export default function TransactionsPage() {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setOrders(getOrders());
+    let cancelled = false;
+    fetchOrders()
+      .then((list) => {
+        if (!cancelled) setOrders(list);
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const total = orders
@@ -24,7 +36,7 @@ export default function TransactionsPage() {
         <p className="font-stub text-sm font-bold">{peso(total)}</p>
       </div>
 
-      {orders.length === 0 ? (
+      {!loading && orders.length === 0 ? (
         <p className="mt-6 border-2 border-dashed border-ink/40 p-6 text-center text-sm text-muted">
           No transactions yet.
         </p>

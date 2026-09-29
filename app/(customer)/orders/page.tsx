@@ -2,22 +2,43 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/components/auth-provider";
 import { OrderChip, PaymentChip } from "@/components/status-chip";
-import { currentProfile, myOrders } from "@/lib/data/store";
+import { fetchMyOrders } from "@/lib/data/api";
 import { peso, shortTime } from "@/lib/format";
-import type { Order, Profile } from "@/lib/types";
+import type { Order } from "@/lib/types";
 
 export default function OrdersPage() {
-  const [profile, setProfile] = useState<Profile | null | undefined>(undefined);
+  const { profile } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const p = currentProfile();
-    setProfile(p);
-    if (p) setOrders(myOrders(p.id));
-  }, []);
+    if (profile === undefined) return;
+    if (!profile) {
+      setOrders([]);
+      setLoaded(true);
+      return;
+    }
+    let cancelled = false;
+    fetchMyOrders(profile.id)
+      .then((list) => {
+        if (cancelled) return;
+        setOrders(list);
+        setLoaded(true);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setError(err instanceof Error ? err.message : "Could not load orders.");
+        setLoaded(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [profile]);
 
-  if (profile === undefined) return null;
+  if (profile === undefined || !loaded) return null;
 
   if (!profile) {
     return (
@@ -38,7 +59,16 @@ export default function OrdersPage() {
     <div className="px-4 pt-6">
       <h1 className="text-3xl font-black tracking-tight">My orders</h1>
 
-      {orders.length === 0 ? (
+      {error && (
+        <p
+          role="alert"
+          className="mt-4 border-2 border-stamp bg-stamp/10 px-3 py-2 text-sm font-bold text-stamp"
+        >
+          {error}
+        </p>
+      )}
+
+      {!error && orders.length === 0 ? (
         <div className="mt-8 border-2 border-dashed border-ink/40 p-8 text-center">
           <p className="font-bold">You haven&apos;t ordered yet.</p>
           <p className="mt-1 text-sm text-muted">

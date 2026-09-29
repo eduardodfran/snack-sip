@@ -4,8 +4,9 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { GCASH } from "@/lib/constants";
-import { findOrder, resizeImage, submitProof } from "@/lib/data/store";
+import { findOrder, submitProof } from "@/lib/data/api";
 import { peso } from "@/lib/format";
+import { resizeImage } from "@/lib/image";
 import type { Order } from "@/lib/types";
 
 export default function PaymentPage() {
@@ -20,10 +21,22 @@ export default function PaymentPage() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const found = findOrder(params.id);
-    setOrder(found ?? null);
-    setSubmitted(found?.paymentStatus === "for_verification");
-    setLoaded(true);
+    let cancelled = false;
+    findOrder(params.id)
+      .then((found) => {
+        if (cancelled) return;
+        setOrder(found);
+        setSubmitted(found?.paymentStatus === "for_verification");
+        setLoaded(true);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setOrder(null);
+        setLoaded(true);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [params.id]);
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -38,7 +51,7 @@ export default function PaymentPage() {
     }
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     if (!order) return;
@@ -48,9 +61,9 @@ export default function PaymentPage() {
     }
     try {
       setSubmitting(true);
-      submitProof(order.id, proof, reference);
+      await submitProof(order.id, proof, reference);
       setSubmitted(true);
-      const refreshed = findOrder(order.id);
+      const refreshed = await findOrder(order.id);
       setOrder(refreshed ?? order);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");

@@ -1,36 +1,39 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useAuth } from "@/components/auth-provider";
 import { QrImage } from "@/components/qr-image";
 import { LOYALTY } from "@/lib/constants";
-import {
-  currentProfile,
-  myRedemptions,
-  redeemReward,
-} from "@/lib/data/store";
-import type { Redemption } from "@/lib/data/store";
-import type { Profile } from "@/lib/types";
+import { fetchRedemptions, redeemReward } from "@/lib/data/api";
+import type { Redemption } from "@/lib/types";
 
 export default function LoyaltyPage() {
-  const [profile, setProfile] = useState<Profile | null | undefined>(undefined);
+  const { profile, refreshProfile } = useAuth();
   const [redemptions, setRedemptions] = useState<Redemption[]>([]);
+  const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  function refresh(id: string) {
-    const users = currentProfile();
-    setProfile(users);
-    setRedemptions(myRedemptions(id));
-  }
-
-  useEffect(() => {
-    const p = currentProfile();
-    setProfile(p);
-    if (p) setRedemptions(myRedemptions(p.id));
+  const loadRedemptions = useCallback(async () => {
+    try {
+      setRedemptions(await fetchRedemptions());
+    } catch {
+      setRedemptions([]);
+    }
   }, []);
 
-  if (profile === undefined) return null;
+  useEffect(() => {
+    if (profile === undefined) return;
+    if (!profile) {
+      setRedemptions([]);
+      setLoaded(true);
+      return;
+    }
+    void loadRedemptions().finally(() => setLoaded(true));
+  }, [profile, loadRedemptions]);
+
+  if (profile === undefined || !loaded) return null;
 
   if (!profile) {
     return (
@@ -52,13 +55,12 @@ export default function LoyaltyPage() {
   const progress = Math.min(profile.points, LOYALTY.rewardAt);
   const canRedeem = profile.points >= LOYALTY.rewardAt;
 
-  function handleRedeem() {
-    if (!profile) return;
+  async function handleRedeem() {
     setError("");
     setMessage("");
     try {
-      redeemReward(profile.id);
-      refresh(profile.id);
+      await redeemReward();
+      await Promise.all([refreshProfile(), loadRedemptions()]);
       setMessage("Reward redeemed — show this screen to staff.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not redeem.");

@@ -4,17 +4,31 @@ import { useEffect, useState } from "react";
 import { FoodArt } from "@/components/food-art";
 import { QtyStepper } from "@/components/qty-stepper";
 import { useCart } from "@/lib/cart";
-import { getProducts } from "@/lib/data/store";
+import { fetchProducts } from "@/lib/data/api";
 import { peso } from "@/lib/format";
 import type { Product } from "@/lib/types";
 
 export default function MenuPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [loaded, setLoaded] = useState(false);
   const cart = useCart();
 
   useEffect(() => {
-    setProducts(getProducts());
+    let cancelled = false;
+    fetchProducts()
+      .then((list) => {
+        if (!cancelled) setProducts(list);
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setLoaded(true);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
+
+  if (!loaded) return null;
 
   return (
     <div>

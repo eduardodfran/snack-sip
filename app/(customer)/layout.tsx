@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { CartProvider, useCart } from "@/lib/cart";
-import { currentProfile, logout } from "@/lib/data/store";
+import { useAuth } from "@/components/auth-provider";
+import { signOut } from "@/lib/data/api";
 import type { Profile } from "@/lib/types";
 import { BottomNav } from "@/components/bottom-nav";
 import { CartBar } from "@/components/cart-bar";
@@ -24,8 +24,8 @@ function Header({ profile }: { profile: Profile | null }) {
   const router = useRouter();
   const { count } = useCart();
 
-  function handleLogout() {
-    logout();
+  async function handleLogout() {
+    await signOut();
     router.push("/");
     router.refresh();
   }
@@ -117,11 +117,7 @@ export default function CustomerLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const [profile, setProfile] = useState<Profile | null | undefined>(undefined);
-
-  useEffect(() => {
-    setProfile(currentProfile());
-  }, [pathname]);
+  const { profile } = useAuth();
 
   const hideNav = HIDE_ON.includes(pathname);
   const hideCartBar =

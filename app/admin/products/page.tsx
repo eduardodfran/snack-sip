@@ -2,32 +2,55 @@
 
 import { useEffect, useState } from "react";
 import { FoodArt } from "@/components/food-art";
-import { getProducts, saveProducts } from "@/lib/data/store";
+import { fetchProducts, updateProduct } from "@/lib/data/api";
 import { peso } from "@/lib/format";
 import type { Product } from "@/lib/types";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    setProducts(getProducts());
+    let cancelled = false;
+    fetchProducts()
+      .then((list) => {
+        if (!cancelled) setProducts(list);
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Could not load products.");
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  function update(updated: Product[]) {
-    setProducts(updated);
-    saveProducts(updated);
+  async function applyPatch(id: string, patch: Partial<Product>) {
+    setProducts((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, ...patch } : p)),
+    );
+    try {
+      await updateProduct(id, patch);
+      setError("");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Could not save that change.",
+      );
+      setProducts(await fetchProducts());
+    }
   }
 
   function bumpStock(id: string, delta: number) {
-    update(
-      products.map((p) =>
-        p.id === id ? { ...p, stock: Math.max(0, p.stock + delta) } : p,
-      ),
-    );
+    const product = products.find((p) => p.id === id);
+    if (!product) return;
+    void applyPatch(id, { stock: Math.max(0, product.stock + delta) });
   }
 
   function toggleActive(id: string) {
-    update(products.map((p) => (p.id === id ? { ...p, active: !p.active } : p)));
+    const product = products.find((p) => p.id === id);
+    if (!product) return;
+    void applyPatch(id, { active: !product.active });
   }
 
   return (
@@ -36,6 +59,15 @@ export default function AdminProductsPage() {
       <p className="mt-1 text-sm text-muted">
         Availability updates both the website and the POS.
       </p>
+
+      {error && (
+        <p
+          role="alert"
+          className="mt-3 border-2 border-stamp bg-stamp/10 px-3 py-2 text-sm font-bold text-stamp"
+        >
+          {error}
+        </p>
+      )}
 
       <ul className="mt-4 space-y-3">
         {products.map((product) => (

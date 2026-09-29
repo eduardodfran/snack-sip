@@ -3,58 +3,76 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { useAuth } from "@/components/auth-provider";
 import { useCart } from "@/lib/cart";
-import { PICKUP_SLOTS } from "@/lib/catalog";
 import {
-  buildLines,
-  createOrder,
-  currentProfile,
-  getProducts,
-} from "@/lib/data/store";
+  createPreOrder,
+  fetchPickupSlots,
+  fetchProducts,
+} from "@/lib/data/api";
+import { PICKUP_SLOTS } from "@/lib/catalog";
 import { peso } from "@/lib/format";
-import type { Profile } from "@/lib/types";
+import type { PickupSlot, Product } from "@/lib/types";
 
 export default function CheckoutPage() {
   const cart = useCart();
   const router = useRouter();
-  const [profile, setProfile] = useState<Profile | null | undefined>(undefined);
+  const { profile } = useAuth();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [productsLoaded, setProductsLoaded] = useState(false);
+  const [slots, setSlots] = useState<PickupSlot[]>(PICKUP_SLOTS);
   const [slotId, setSlotId] = useState(PICKUP_SLOTS[0].id);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    setProfile(currentProfile());
+    let cancelled = false;
+    void fetchProducts()
+      .then((list) => !cancelled && setProducts(list))
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setProductsLoaded(true);
+      });
+    void fetchPickupSlots()
+      .then((list) => {
+        if (cancelled || list.length === 0) return;
+        setSlots(list);
+        setSlotId((current) =>
+          list.some((s) => s.id === current) ? current : list[0].id,
+        );
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const summary = useMemo(() => {
-    const products = getProducts();
     return cart.items.flatMap((item) => {
       const product = products.find((p) => p.id === item.productId);
       if (!product) return [];
       return [{ product, qty: item.qty }];
     });
-  }, [cart.items]);
+  }, [cart.items, products]);
 
   const total = summary.reduce(
     (sum, { product, qty }) => sum + product.price * qty,
     0,
   );
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     if (!profile) return;
 
-    const products = getProducts();
-    const slot = PICKUP_SLOTS.find((s) => s.id === slotId);
+    const slot = slots.find((s) => s.id === slotId);
     try {
       setSubmitting(true);
-      const order = createOrder({
-        type: "pre_order",
-        customerId: profile.id,
-        customerName: profile.name,
-        lines: buildLines(cart.items, products),
-        paymentMethod: "gcash",
+      const order = await createPreOrder({
+        lines: cart.items.map((item) => ({
+          productId: item.productId,
+          qty: item.qty,
+        })),
         pickupSlotId: slot?.id ?? null,
         pickupLabel: slot?.label ?? null,
       });
@@ -66,7 +84,7 @@ export default function CheckoutPage() {
     }
   }
 
-  if (profile === undefined) return null;
+  if (profile === undefined || !productsLoaded) return null;
 
   if (!profile) {
     return (
@@ -135,7 +153,7 @@ export default function CheckoutPage() {
                 role="radiogroup"
                 aria-label="Pickup schedule"
               >
-                {PICKUP_SLOTS.map((slot) => (
+                {slots.map((slot) => (
                   <label
                     key={slot.id}
                     className={`flex cursor-pointer items-center gap-3 border-2 px-3 py-3 ${

@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
-import { claimOrder, getOrders } from "@/lib/data/store";
+import { claimOrder, findOrderByCode } from "@/lib/data/api";
 import { peso } from "@/lib/format";
 import type { Order } from "@/lib/types";
 
@@ -16,15 +16,25 @@ function VerifyScan() {
   const [released, setReleased] = useState(false);
 
   useEffect(() => {
-    const found = getOrders().find(
-      (o) => o.claimCode === code.trim().toUpperCase(),
-    );
-    setOrder(found ?? null);
-    setChecked(true);
+    let cancelled = false;
+    findOrderByCode(code)
+      .then((found) => {
+        if (cancelled) return;
+        setOrder(found);
+        setChecked(true);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setOrder(null);
+        setChecked(true);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [code]);
 
-  function release() {
-    const result = claimOrder(code);
+  async function release() {
+    const result = await claimOrder(code);
     if (result.ok) {
       setReleased(true);
       setOrder(result.order);
