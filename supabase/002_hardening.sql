@@ -2,6 +2,10 @@
 -- Paste this whole file into Supabase Studio -> SQL Editor -> Run.
 -- Run AFTER schema.sql (every statement is idempotent / safe to re-run).
 
+-- Claim-code generation needs pgcrypto; on Supabase it lives in the
+-- extensions schema, which the pinned search_path below must include.
+create extension if not exists "pgcrypto" with schema extensions;
+
 -- ============================================================ sequences
 -- Race-safe order numbers (PO-001 / WI-001) and queue numbers.
 create sequence if not exists public.order_number_po;
@@ -250,7 +254,7 @@ create or replace function public.create_pre_order(
 returns jsonb
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_uid uuid := auth.uid();
@@ -348,7 +352,7 @@ create or replace function public.create_walk_in(
 returns jsonb
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_total integer := 0;

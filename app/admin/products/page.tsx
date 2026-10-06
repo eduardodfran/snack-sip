@@ -2,13 +2,42 @@
 
 import { useEffect, useState } from "react";
 import { FoodArt } from "@/components/food-art";
-import { fetchProducts, updateProduct } from "@/lib/data/api";
+import { ProductForm, type ProductFormValues } from "@/components/product-form";
+import {
+  createProduct,
+  deleteProduct,
+  fetchProducts,
+  updateProduct,
+} from "@/lib/data/api";
 import { peso } from "@/lib/format";
 import type { Product } from "@/lib/types";
+
+type Dialog =
+  | { mode: "add" }
+  | { mode: "edit"; product: Product }
+  | null;
+
+function slugify(name: string, taken: string[]): string {
+  const base =
+    name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "item";
+  let slug = base;
+  let n = 2;
+  while (taken.includes(slug)) {
+    slug = `${base}-${n}`;
+    n += 1;
+  }
+  return slug;
+}
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState("");
+  const [info, setInfo] = useState("");
+  const [dialog, setDialog] = useState<Dialog>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -25,6 +54,12 @@ export default function AdminProductsPage() {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    if (!confirmDeleteId) return;
+    const timer = setTimeout(() => setConfirmDeleteId(null), 3000);
+    return () => clearTimeout(timer);
+  }, [confirmDeleteId]);
 
   async function applyPatch(id: string, patch: Partial<Product>) {
     setProducts((prev) =>
@@ -53,12 +88,64 @@ export default function AdminProductsPage() {
     void applyPatch(id, { active: !product.active });
   }
 
+  async function handleSave(values: ProductFormValues) {
+    if (dialog?.mode === "add") {
+      const id = slugify(values.name, products.map((p) => p.id));
+      const created = await createProduct({ id, ...values });
+      setProducts((prev) => [...prev, created]);
+    } else if (dialog?.mode === "edit") {
+      const { id } = dialog.product;
+      await updateProduct(id, values);
+      setProducts((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, ...values } : p)),
+      );
+    }
+    setError("");
+    setInfo("");
+    setDialog(null);
+  }
+
+  async function handleDelete(id: string) {
+    try {
+      const { deleted } = await deleteProduct(id);
+      if (deleted) {
+        setProducts((prev) => prev.filter((p) => p.id !== id));
+        setInfo("");
+      } else {
+        setProducts((prev) =>
+          prev.map((p) => (p.id === id ? { ...p, active: false } : p)),
+        );
+        setInfo(
+          "That product is part of past orders, so it was hidden instead of deleted — order history stays intact.",
+        );
+      }
+      setError("");
+      setConfirmDeleteId(null);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Could not delete that product.",
+      );
+      setConfirmDeleteId(null);
+    }
+  }
+
   return (
     <div>
-      <h1 className="text-2xl font-black">Products</h1>
-      <p className="mt-1 text-sm text-muted">
-        Availability updates both the website and the POS.
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-black">Products</h1>
+          <p className="mt-1 text-sm text-muted">
+            Availability updates both the website and the POS.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setDialog({ mode: "add" })}
+          className="border-2 border-ink bg-tarp px-4 py-2.5 font-black shadow-[4px_4px_0_0_#1a1a1a] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0_0_#1a1a1a]"
+        >
+          + Add product
+        </button>
+      </div>
 
       {error && (
         <p
@@ -66,6 +153,12 @@ export default function AdminProductsPage() {
           className="mt-3 border-2 border-stamp bg-stamp/10 px-3 py-2 text-sm font-bold text-stamp"
         >
           {error}
+        </p>
+      )}
+
+      {info && (
+        <p className="mt-3 border-2 border-ink bg-tarp/40 px-3 py-2 text-sm font-bold">
+          {info}
         </p>
       )}
 
@@ -128,10 +221,44 @@ export default function AdminProductsPage() {
                   Sold out
                 </span>
               )}
+
+              <button
+                type="button"
+                onClick={() => setDialog({ mode: "edit", product })}
+                className="border-2 border-ink bg-white px-3 py-2 text-sm font-bold"
+              >
+                Edit
+              </button>
+
+              {confirmDeleteId === product.id ? (
+                <button
+                  type="button"
+                  onClick={() => void handleDelete(product.id)}
+                  className="border-2 border-stamp bg-stamp px-3 py-2 text-sm font-bold text-white"
+                >
+                  Delete for real?
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setConfirmDeleteId(product.id)}
+                  className="border-2 border-stamp px-3 py-2 text-sm font-bold text-stamp"
+                >
+                  Delete
+                </button>
+              )}
             </div>
           </li>
         ))}
       </ul>
+
+      {dialog && (
+        <ProductForm
+          product={dialog.mode === "edit" ? dialog.product : null}
+          onCancel={() => setDialog(null)}
+          onSave={handleSave}
+        />
+      )}
     </div>
   );
 }

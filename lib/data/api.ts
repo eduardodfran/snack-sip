@@ -210,10 +210,50 @@ export async function fetchProducts(): Promise<Product[]> {
 
 export async function updateProduct(
   id: string,
-  patch: Partial<Pick<Product, "name" | "description" | "price" | "stock" | "active">>,
+  patch: Partial<
+    Pick<Product, "name" | "description" | "price" | "stock" | "active" | "art">
+  >,
 ): Promise<void> {
   const { error } = await db().from("products").update(patch).eq("id", id);
   if (error) throw new Error(error.message);
+}
+
+export async function createProduct(
+  product: Product,
+): Promise<Product> {
+  const { data, error } = await db()
+    .from("products")
+    .insert(product)
+    .select()
+    .single();
+  if (error) {
+    if (error.code === "23505") {
+      throw new Error("A product with that name already exists.");
+    }
+    throw new Error(error.message);
+  }
+  return mapProduct(data);
+}
+
+/**
+ * Deletes a product. Products referenced by past order lines can't be
+ * removed without breaking history (FK), so those are hidden instead —
+ * `deleted: false` tells the caller to show that note.
+ */
+export async function deleteProduct(
+  id: string,
+): Promise<{ deleted: boolean }> {
+  const { error } = await db().from("products").delete().eq("id", id);
+  if (!error) return { deleted: true };
+  if (error.code === "23503") {
+    const { error: hideError } = await db()
+      .from("products")
+      .update({ active: false })
+      .eq("id", id);
+    if (hideError) throw new Error(hideError.message);
+    return { deleted: false };
+  }
+  throw new Error(error.message);
 }
 
 export async function fetchPickupSlots(): Promise<PickupSlot[]> {
