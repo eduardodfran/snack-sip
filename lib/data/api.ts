@@ -1,6 +1,6 @@
 import { getSupabase, isSupabaseConfigured } from "@/lib/supabase/client";
 import { PICKUP_SLOTS, SEED_PRODUCTS } from "@/lib/catalog";
-import { dataUrlToBlob } from "@/lib/image";
+import { dataUrlToBlob, resizeImage } from "@/lib/image";
 import type {
   Order,
   OrderLine,
@@ -103,6 +103,7 @@ function mapProduct(row: {
   stock: number;
   active: boolean;
   art: Product["art"];
+  image_path?: string | null;
 }): Product {
   return {
     id: row.id,
@@ -112,6 +113,7 @@ function mapProduct(row: {
     stock: row.stock,
     active: row.active,
     art: row.art,
+    imagePath: row.image_path ?? null,
   };
 }
 
@@ -211,11 +213,35 @@ export async function fetchProducts(): Promise<Product[]> {
 export async function updateProduct(
   id: string,
   patch: Partial<
-    Pick<Product, "name" | "description" | "price" | "stock" | "active" | "art">
+    Pick<
+      Product,
+      "name" | "description" | "price" | "stock" | "active" | "art" | "imagePath"
+    >
   >,
 ): Promise<void> {
-  const { error } = await db().from("products").update(patch).eq("id", id);
+  const row: Record<string, unknown> = { ...patch };
+  if ("imagePath" in patch) {
+    row.image_path = patch.imagePath;
+    delete row.imagePath;
+  }
+  const { error } = await db().from("products").update(row).eq("id", id);
   if (error) throw new Error(error.message);
+}
+
+function toProductRow(product: Product): Record<string, unknown> {
+  const row: Record<string, unknown> = {
+    id: product.id,
+    name: product.name,
+    description: product.description,
+    price: product.price,
+    stock: product.stock,
+    active: product.active,
+    art: product.art,
+  };
+  // Only send image_path when set — keeps inserts working before
+  // migration 003 has run (the column wouldn't exist yet).
+  if (product.imagePath) row.image_path = product.imagePath;
+  return row;
 }
 
 export async function createProduct(
@@ -223,7 +249,7 @@ export async function createProduct(
 ): Promise<Product> {
   const { data, error } = await db()
     .from("products")
-    .insert(product)
+    .insert(toProductRow(product))
     .select()
     .single();
   if (error) {
@@ -254,6 +280,40 @@ export async function deleteProduct(
     return { deleted: false };
   }
   throw new Error(error.message);
+}
+
+/**
+ * Uploads (or replaces) a product photo, resized client-side first.
+ * Stable path per product keeps re-uploads from orphaning old files.
+ */
+export async function uploadProductImage(
+  productId: string,
+  file: File,
+): Promise<string> {
+  const dataUrl = await resizeImage(file);
+  const path = `${productId}.jpg`;
+  const { error } = await db()
+    .storage.from("product-images")
+    .upload(path, dataUrlToBlob(dataUrl), {
+      contentType: "image/jpeg",
+      upsert: true,
+    });
+  if (error) throw new Error(`Could not upload the photo: ${error.message}`);
+  return path;
+}
+
+/** Best-effort cleanup — an orphaned photo is harmless, a failed save isn't. */
+export async function removeProductImage(path: string): Promise<void> {
+  if (!isSupabaseConfigured()) return;
+  await getSupabase().storage.from("product-images").remove([path]);
+}
+
+export function productImageUrl(path: string): string | null {
+  if (!isSupabaseConfigured()) return null;
+  const { data } = getSupabase()
+    .storage.from("product-images")
+    .getPublicUrl(path);
+  return data.publicUrl;
 }
 
 export async function fetchPickupSlots(): Promise<PickupSlot[]> {

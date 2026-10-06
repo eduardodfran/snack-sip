@@ -9,6 +9,7 @@ export const SEED_PRODUCTS: Product[] = [
     stock: 60,
     active: true,
     art: "saucer",
+    imagePath: null,
   },
   {
     id: "siomai",
@@ -18,6 +19,7 @@ export const SEED_PRODUCTS: Product[] = [
     stock: 40,
     active: true,
     art: "siomai",
+    imagePath: null,
   },
   {
     id: "siopao",
@@ -27,6 +29,7 @@ export const SEED_PRODUCTS: Product[] = [
     stock: 40,
     active: true,
     art: "siopao",
+    imagePath: null,
   },
   {
     id: "waffle",
@@ -36,6 +39,7 @@ export const SEED_PRODUCTS: Product[] = [
     stock: 35,
     active: true,
     art: "waffle",
+    imagePath: null,
   },
   {
     id: "palamig",
@@ -45,6 +49,7 @@ export const SEED_PRODUCTS: Product[] = [
     stock: 50,
     active: true,
     art: "palamig",
+    imagePath: null,
   },
 ];
 

@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FoodArt } from "@/components/food-art";
+import { ProductArt } from "@/components/product-art";
 import { ProductForm, type ProductFormValues } from "@/components/product-form";
 import {
   createProduct,
   deleteProduct,
   fetchProducts,
+  removeProductImage,
   updateProduct,
+  uploadProductImage,
 } from "@/lib/data/api";
 import { peso } from "@/lib/format";
 import type { Product } from "@/lib/types";
@@ -89,15 +91,37 @@ export default function AdminProductsPage() {
   }
 
   async function handleSave(values: ProductFormValues) {
+    const { photoFile, removePhoto, ...fields } = values;
+
     if (dialog?.mode === "add") {
-      const id = slugify(values.name, products.map((p) => p.id));
-      const created = await createProduct({ id, ...values });
+      const id = slugify(fields.name, products.map((p) => p.id));
+      const imagePath = photoFile
+        ? await uploadProductImage(id, photoFile)
+        : null;
+      let created: Product;
+      try {
+        created = await createProduct({ id, ...fields, imagePath });
+      } catch (err) {
+        if (imagePath) void removeProductImage(imagePath);
+        throw err;
+      }
       setProducts((prev) => [...prev, created]);
     } else if (dialog?.mode === "edit") {
-      const { id } = dialog.product;
-      await updateProduct(id, values);
+      const { id, imagePath: currentPath } = dialog.product;
+      let nextImage: string | null | undefined;
+      if (photoFile) {
+        nextImage = await uploadProductImage(id, photoFile);
+      } else if (removePhoto && currentPath) {
+        void removeProductImage(currentPath);
+        nextImage = null;
+      }
+      const patch: Partial<Product> = {
+        ...fields,
+        ...(nextImage !== undefined ? { imagePath: nextImage } : {}),
+      };
+      await updateProduct(id, patch);
       setProducts((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, ...values } : p)),
+        prev.map((p) => (p.id === id ? { ...p, ...patch } : p)),
       );
     }
     setError("");
@@ -109,6 +133,8 @@ export default function AdminProductsPage() {
     try {
       const { deleted } = await deleteProduct(id);
       if (deleted) {
+        const removed = products.find((p) => p.id === id);
+        if (removed?.imagePath) void removeProductImage(removed.imagePath);
         setProducts((prev) => prev.filter((p) => p.id !== id));
         setInfo("");
       } else {
@@ -166,8 +192,8 @@ export default function AdminProductsPage() {
         {products.map((product) => (
           <li key={product.id} className="border-2 border-ink bg-white p-4">
             <div className="flex items-start gap-3">
-              <FoodArt
-                art={product.art}
+              <ProductArt
+                product={product}
                 className="h-14 w-14 shrink-0 border-2 border-ink bg-paper p-1"
               />
               <div className="min-w-0 flex-1">

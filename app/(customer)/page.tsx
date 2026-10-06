@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { FoodArt } from "@/components/food-art";
+import { ProductArt } from "@/components/product-art";
 import { fetchPickupSlots, fetchProducts } from "@/lib/data/api";
 import { PICKUP_SLOTS } from "@/lib/catalog";
 import type { PickupSlot, Product } from "@/lib/types";
@@ -92,7 +92,7 @@ export default function HomePage() {
                   p.stock <= 0 ? "opacity-50" : "shadow-[3px_3px_0_0_#1a1a1a]"
                 }`}
               >
-                <FoodArt art={p.art} className="mx-auto h-20 w-20" />
+                <ProductArt product={p} className="mx-auto h-20 w-20" />
                 <p className="mt-1 text-sm font-bold leading-tight">{p.name}</p>
                 <p className="font-stub text-sm font-bold">
                   ₱{p.price}

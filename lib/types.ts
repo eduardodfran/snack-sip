@@ -24,6 +24,8 @@ export type Product = {
   stock: number;
   active: boolean;
   art: ArtKey;
+  /** Storage path of an uploaded photo in the product-images bucket; the FoodArt drawing is the fallback. */
+  imagePath: string | null;
 };
 
 export type ArtKey =

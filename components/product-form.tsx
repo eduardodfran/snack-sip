@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { FoodArt } from "@/components/food-art";
+import { productImageUrl } from "@/lib/data/api";
 import type { ArtKey, Product } from "@/lib/types";
 
 const ART_OPTIONS: { key: ArtKey; label: string }[] = [
@@ -19,6 +20,10 @@ export type ProductFormValues = {
   stock: number;
   active: boolean;
   art: ArtKey;
+  /** Newly picked photo to upload — the page handles the actual upload. */
+  photoFile: File | null;
+  /** True when the existing photo should be deleted on save. */
+  removePhoto: boolean;
 };
 
 export function ProductForm({
@@ -38,8 +43,21 @@ export function ProductForm({
   const [stock, setStock] = useState(product ? String(product.stock) : "0");
   const [active, setActive] = useState(product?.active ?? true);
   const [art, setArt] = useState<ArtKey>(product?.art ?? "saucer");
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [removePhoto, setRemovePhoto] = useState(false);
+  const [objectUrl, setObjectUrl] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!photoFile) {
+      setObjectUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(photoFile);
+    setObjectUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [photoFile]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -52,6 +70,28 @@ export function ProductForm({
   function cancel() {
     if (saving) return;
     onCancel();
+  }
+
+  function onPhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0] ?? null;
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setError("Pick an image file (JPG, PNG, HEIC…).");
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      setError("Photos must be under 8 MB.");
+      return;
+    }
+    setError("");
+    setRemovePhoto(false);
+    setPhotoFile(file);
+  }
+
+  function clearPhoto() {
+    if (photoFile) setPhotoFile(null);
+    else setRemovePhoto(true);
   }
 
   async function submit(e: React.FormEvent) {
@@ -84,12 +124,18 @@ export function ProductForm({
         stock: stockNum,
         active,
         art,
+        photoFile,
+        removePhoto,
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not save that product.");
       setSaving(false);
     }
   }
+
+  const dbPhotoUrl =
+    product?.imagePath && !removePhoto ? productImageUrl(product.imagePath) : null;
+  const photoPreview = objectUrl ?? dbPhotoUrl;
 
   return (
     <div
@@ -219,7 +265,57 @@ export function ProductForm({
           </div>
 
           <fieldset>
-            <legend className="text-xs font-bold text-muted">Picture</legend>
+            <legend className="text-xs font-bold text-muted">Photo</legend>
+            {photoPreview ? (
+              <div className="mt-1 flex items-center gap-3">
+                {/* eslint-disable-next-line @next/next/no-img-element -- preview / Supabase storage URL */}
+                <img
+                  src={photoPreview}
+                  alt=""
+                  className="h-20 w-20 shrink-0 border-2 border-ink bg-paper object-cover"
+                />
+                <div className="flex flex-col gap-2">
+                  <label className="inline-block cursor-pointer border-2 border-ink bg-white px-3 py-2 text-center text-sm font-bold">
+                    Replace photo
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={onPhotoChange}
+                      className="sr-only"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={clearPhoto}
+                    className="border-2 border-stamp px-3 py-2 text-sm font-bold text-stamp"
+                  >
+                    {photoFile ? "Cancel photo" : "Remove photo"}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-1">
+                <label className="inline-block cursor-pointer border-2 border-ink bg-white px-3 py-2 text-sm font-bold">
+                  Upload photo
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={onPhotoChange}
+                    className="sr-only"
+                  />
+                </label>
+                <p className="mt-1 text-xs text-muted">
+                  Optional — any size, resized to fit. Falls back to the
+                  drawing below.
+                </p>
+              </div>
+            )}
+          </fieldset>
+
+          <fieldset>
+            <legend className="text-xs font-bold text-muted">
+              Fallback drawing
+            </legend>
             <div className="mt-1 flex flex-wrap gap-2">
               {ART_OPTIONS.map((option) => {
                 const selected = option.key === art;

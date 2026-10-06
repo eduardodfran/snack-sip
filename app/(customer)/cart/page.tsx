@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { FoodArt } from "@/components/food-art";
+import { ProductArt } from "@/components/product-art";
 import { QtyStepper } from "@/components/qty-stepper";
 import { useCart } from "@/lib/cart";
 import { fetchProducts } from "@/lib/data/api";
@@ -67,8 +67,8 @@ export default function CartPage() {
                 key={product.id}
                 className="flex items-center gap-3 border-b-2 border-ink bg-white py-3.5"
               >
-                <FoodArt
-                  art={product.art}
+                <ProductArt
+                  product={product}
                   className="h-12 w-12 shrink-0 border-2 border-ink bg-paper p-0.5"
                 />
                 <div className="min-w-0 flex-1">

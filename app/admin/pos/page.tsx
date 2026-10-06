@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { FoodArt } from "@/components/food-art";
+import { ProductArt } from "@/components/product-art";
 import { Scanner } from "@/components/scanner";
 import { Stub } from "@/components/stub";
 import {
@@ -289,7 +289,7 @@ export default function PosPage() {
                   {current}
                 </span>
               )}
-              <FoodArt art={product.art} className="mx-auto h-16 w-16" />
+              <ProductArt product={product} className="mx-auto h-16 w-16" />
               <p className="mt-1 text-sm font-bold leading-tight">
                 {product.name}
               </p>

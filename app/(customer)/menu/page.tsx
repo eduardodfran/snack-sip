@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FoodArt } from "@/components/food-art";
+import { ProductArt } from "@/components/product-art";
 import { QtyStepper } from "@/components/qty-stepper";
 import { useCart } from "@/lib/cart";
 import { fetchProducts } from "@/lib/data/api";
@@ -58,7 +58,7 @@ export default function MenuPage() {
                   soldOut ? "opacity-45" : ""
                 }`}
               >
-                <FoodArt art={product.art} className="h-full w-full" />
+                <ProductArt product={product} className="h-full w-full" />
                 {soldOut && (
                   <span className="absolute inset-0 flex items-center justify-center border-2 border-stamp bg-white/80 text-[10px] font-black text-stamp -rotate-6">
                     SOLD
