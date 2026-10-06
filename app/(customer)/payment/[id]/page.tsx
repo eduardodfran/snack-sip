@@ -160,7 +160,6 @@ export default function PaymentPage() {
             ref={fileRef}
             type="file"
             accept="image/*"
-            capture="environment"
             onChange={handleFile}
             className="mt-1 block w-full border-2 border-ink bg-white p-2 text-sm file:mr-3 file:border-2 file:border-ink file:bg-tarp file:px-3 file:py-1.5 file:font-bold"
             required

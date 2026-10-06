@@ -43,6 +43,10 @@ export default function HomePage() {
 
   const anyAvailable = products.some((p) => p.active && p.stock > 0);
 
+  const highlights = products.filter((p) => p.active);
+  const visibleHighlights = highlights.slice(0, 6);
+  const menuLink = highlights.length > visibleHighlights.length;
+
   return (
     <div>
       <section className="border-b-2 border-ink px-4 pt-8 pb-8 md:pt-12 md:pb-10">
@@ -81,30 +85,40 @@ export default function HomePage() {
             </div>
           </div>
 
-          <ul
-            aria-label="Menu highlights"
-            className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-2"
-          >
-            {products.map((p) => (
-              <li
-                key={p.id}
-                className={`border-2 border-ink bg-white p-3 text-center ${
-                  p.stock <= 0 ? "opacity-50" : "shadow-[3px_3px_0_0_#1a1a1a]"
-                }`}
+          <div>
+            <ul
+              aria-label="Menu highlights"
+              className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-2"
+            >
+              {visibleHighlights.map((p) => (
+                <li
+                  key={p.id}
+                  className={`border-2 border-ink bg-white p-3 text-center ${
+                    p.stock <= 0 ? "opacity-50" : "shadow-[3px_3px_0_0_#1a1a1a]"
+                  }`}
+                >
+                  <ProductArt product={p} className="mx-auto h-20 w-20" />
+                  <p className="mt-1 text-sm font-bold leading-tight">{p.name}</p>
+                  <p className="font-stub text-sm font-bold">
+                    ₱{p.price}
+                    {p.stock <= 0 && (
+                      <span className="mt-1 block text-xs text-stamp">
+                        Sold out
+                      </span>
+                    )}
+                  </p>
+                </li>
+              ))}
+            </ul>
+            {menuLink && (
+              <Link
+                href="/menu"
+                className="mt-3 block border-2 border-ink bg-white px-4 py-2.5 text-center text-sm font-bold"
               >
-                <ProductArt product={p} className="mx-auto h-20 w-20" />
-                <p className="mt-1 text-sm font-bold leading-tight">{p.name}</p>
-                <p className="font-stub text-sm font-bold">
-                  ₱{p.price}
-                  {p.stock <= 0 && (
-                    <span className="mt-1 block text-xs text-stamp">
-                      Sold out
-                    </span>
-                  )}
-                </p>
-              </li>
-            ))}
-          </ul>
+                See the full menu →
+              </Link>
+            )}
+          </div>
         </div>
       </section>
 
