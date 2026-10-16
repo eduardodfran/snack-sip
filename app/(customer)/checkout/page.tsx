@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/components/auth-provider";
 import { useCart } from "@/lib/cart";
 import {
+  SESSION_EXPIRED_MESSAGE,
   createPreOrder,
   fetchPickupSlots,
   fetchProducts,
@@ -63,7 +64,10 @@ export default function CheckoutPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    if (!profile) return;
+    if (!profile) {
+      setError("Please log in to complete your pre-order.");
+      return;
+    }
 
     const slot = slots.find((s) => s.id === slotId);
     try {
@@ -79,7 +83,13 @@ export default function CheckoutPage() {
       cart.clear();
       router.push(`/payment/${order.id}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      const message =
+        err instanceof Error ? err.message : "Something went wrong.";
+      if (message === SESSION_EXPIRED_MESSAGE) {
+        router.push("/login?next=/checkout");
+        return;
+      }
+      setError(message);
       setSubmitting(false);
     }
   }

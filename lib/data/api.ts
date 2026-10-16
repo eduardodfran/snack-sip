@@ -201,6 +201,26 @@ export async function currentUserId(): Promise<string | null> {
   return data.user?.id ?? null;
 }
 
+/** Shown when the auth session died (expired/invalid token). */
+export const SESSION_EXPIRED_MESSAGE =
+  "Your session expired — please log out and log in again, then retry checkout.";
+
+/**
+ * PostgREST surfaces a dead session on SECURITY DEFINER RPCs as a raw
+ * Postgres "permission denied for function …" (HTTP 401) instead of a
+ * friendly auth error. Translate it so customers see what to do.
+ */
+export function mapSessionError(message: string): string {
+  if (
+    /permission denied for function/i.test(message) ||
+    /\b42501\b/.test(message) ||
+    /jwt|expired|invalid token|PGRST301/i.test(message)
+  ) {
+    return SESSION_EXPIRED_MESSAGE;
+  }
+  return message;
+}
+
 // ---------------------------------------------------------------- products
 
 export async function fetchProducts(): Promise<Product[]> {
@@ -394,12 +414,17 @@ export async function createPreOrder(input: {
   pickupSlotId: string | null;
   pickupLabel: string | null;
 }): Promise<{ id: string; orderNumber: string }> {
+  // Fail fast with a clear message when the session is gone instead of
+  // surfacing a raw Postgres "permission denied" from the RPC.
+  if (!(await currentUserId())) {
+    throw new Error(SESSION_EXPIRED_MESSAGE);
+  }
   const { data, error } = await db().rpc("create_pre_order", {
     p_lines: input.lines,
     p_pickup_slot_id: input.pickupSlotId,
     p_pickup_label: input.pickupLabel,
   });
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(mapSessionError(error.message));
   return { id: data.id, orderNumber: data.order_number };
 }
 
