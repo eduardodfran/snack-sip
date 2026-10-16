@@ -3,6 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { OrderChip } from "@/components/status-chip";
+import { QrScanner } from "@/components/qr-scanner";
 import {
   claimOrder,
   fetchOrdersWithProofs,
@@ -21,6 +22,7 @@ function OrdersAdmin() {
   const [loading, setLoading] = useState(true);
   const [code, setCode] = useState("");
   const [message, setMessage] = useState("");
+  const [scanning, setScanning] = useState(false);
 
   async function refresh() {
     try {
@@ -72,10 +74,9 @@ function OrdersAdmin() {
     }
   }
 
-  async function handleRelease(e: React.FormEvent) {
-    e.preventDefault();
+  async function releaseByCode(raw: string) {
     try {
-      const result = await claimOrder(code);
+      const result = await claimOrder(raw);
       if (result.ok) {
         setMessage(`${result.order.orderNumber} released and completed.`);
         setCode("");
@@ -86,6 +87,11 @@ function OrdersAdmin() {
     } catch (err) {
       setMessage(err instanceof Error ? err.message : "Something went wrong.");
     }
+  }
+
+  async function handleRelease(e: React.FormEvent) {
+    e.preventDefault();
+    await releaseByCode(code);
   }
 
   return (
@@ -200,9 +206,9 @@ function OrdersAdmin() {
       {tab === "queue" && (
         <section className="mt-4">
           <p className="text-sm text-muted">
-            Type the customer&apos;s claim code, or scan their Order QR
-            with a phone camera or scanner gun — then press Release to
-            complete the order.
+            Type the customer&apos;s claim code, or tap Scan to read
+            their Order QR with this device&apos;s camera — then press
+            Release to complete the order.
           </p>
           <form onSubmit={handleRelease} className="mt-2 flex gap-2">
             <input
@@ -213,12 +219,29 @@ function OrdersAdmin() {
               className="min-w-0 flex-1 border-2 border-ink bg-white px-3 py-2.5 font-stub uppercase"
             />
             <button
+              type="button"
+              onClick={() => setScanning(true)}
+              className="shrink-0 border-2 border-ink bg-white px-4 font-black"
+            >
+              Scan
+            </button>
+            <button
               type="submit"
-              className="border-2 border-ink bg-tarp px-4 font-black"
+              className="shrink-0 border-2 border-ink bg-tarp px-4 font-black"
             >
               Release
             </button>
           </form>
+          {scanning && (
+            <QrScanner
+              onScan={(scanned) => {
+                setScanning(false);
+                setCode(scanned);
+                void releaseByCode(scanned);
+              }}
+              onClose={() => setScanning(false)}
+            />
+          )}
 
           <ul className="mt-4 grid items-start gap-3 md:grid-cols-2">
             {!loading && queue.length === 0 && (
