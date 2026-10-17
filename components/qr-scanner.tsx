@@ -110,12 +110,12 @@ export function QrScanner({
       aria-modal="true"
       aria-label="Scan order QR"
     >
-      <div className="w-full max-w-sm border-2 border-ink bg-white p-4">
-        <h2 className="font-black">Scan order QR</h2>
+      <div className="w-full max-w-sm rounded-2xl border border-line bg-paper p-4 shadow-pop">
+        <h2 className="font-display text-lg">Scan order QR</h2>
         <p className="mt-1 text-sm text-muted">
           Point the camera at the customer&apos;s Order QR.
         </p>
-        <div className="mt-3 border-2 border-ink bg-ink">
+        <div className="mt-3 overflow-hidden rounded-xl border border-line bg-ink">
           <video
             ref={videoRef}
             playsInline
@@ -127,7 +127,7 @@ export function QrScanner({
         {error && (
           <p
             role="alert"
-            className="mt-3 border-2 border-stamp bg-stamp/10 px-3 py-2 text-sm font-bold text-stamp"
+            className="mt-3 rounded-xl border border-cocoa/30 bg-[#f7e9dc] px-3 py-2 text-sm font-bold text-cocoa"
           >
             {error}
           </p>
@@ -135,7 +135,7 @@ export function QrScanner({
         <button
           type="button"
           onClick={onClose}
-          className="mt-3 w-full border-2 border-ink bg-white py-2.5 font-bold"
+          className="mt-3 w-full rounded-full border border-line bg-paper py-2.5 font-bold hover:border-brand"
         >
           Cancel
         </button>

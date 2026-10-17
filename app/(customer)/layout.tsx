@@ -7,6 +7,7 @@ import { useAuth } from "@/components/auth-provider";
 import { signOut } from "@/lib/data/api";
 import type { Profile } from "@/lib/types";
 import { BottomNav } from "@/components/bottom-nav";
+import { BrandLogo } from "@/components/brand-logo";
 import { CartBar } from "@/components/cart-bar";
 
 const HIDE_ON = ["/login", "/signup"];
@@ -31,12 +32,9 @@ function Header({ profile }: { profile: Profile | null }) {
   }
 
   return (
-    <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-2.5">
-      <Link href="/" className="leading-none">
-        <span className="text-lg font-black tracking-tight">Snack &amp; Sip</span>
-        <span className="block text-[10px] font-bold text-ink/70">
-          Techno Fair pre-order
-        </span>
+    <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-2.5">
+      <Link href="/" aria-label="Snack & Sip home">
+        <BrandLogo compact />
       </Link>
 
       <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
@@ -50,10 +48,10 @@ function Header({ profile }: { profile: Profile | null }) {
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className={`border-2 px-3 py-1.5 text-sm font-bold ${
+              className={`rounded-full px-4 py-1.5 text-sm font-bold ${
                 active
-                  ? "border-ink bg-white"
-                  : "border-transparent hover:border-ink/30"
+                  ? "bg-brand text-white"
+                  : "text-ink hover:bg-brand/10"
               }`}
             >
               {item.label}
@@ -63,10 +61,10 @@ function Header({ profile }: { profile: Profile | null }) {
         <Link
           href="/cart"
           aria-current={pathname.startsWith("/cart") ? "page" : undefined}
-          className={`ml-1 border-2 px-3 py-1.5 text-sm font-bold ${
+          className={`ml-1 rounded-full px-4 py-1.5 text-sm font-bold ${
             pathname.startsWith("/cart")
-              ? "border-ink bg-white"
-              : "border-ink bg-ink text-white"
+              ? "bg-ink text-white"
+              : "bg-brand text-white hover:bg-brand-deep"
           }`}
         >
           Cart{count > 0 ? ` (${count})` : ""}
@@ -78,14 +76,14 @@ function Header({ profile }: { profile: Profile | null }) {
           <>
             <Link
               href="/profile"
-              className="hidden max-w-32 truncate border-2 border-ink bg-white px-2 py-1 text-xs font-bold sm:block"
+              className="hidden max-w-32 truncate rounded-full border border-line bg-paper px-3 py-1.5 text-xs font-bold sm:block"
             >
               {profile.name}
             </Link>
             {profile.role === "admin" && (
               <Link
                 href="/admin"
-                className="border-2 border-ink bg-ink px-2 py-1 text-xs font-bold text-white"
+                className="rounded-full bg-ink px-3 py-1.5 text-xs font-bold text-white"
               >
                 Admin
               </Link>
@@ -93,7 +91,7 @@ function Header({ profile }: { profile: Profile | null }) {
             <button
               type="button"
               onClick={handleLogout}
-              className="text-xs font-bold underline underline-offset-2"
+              className="text-xs font-bold text-cocoa underline underline-offset-2"
             >
               Log out
             </button>
@@ -101,7 +99,7 @@ function Header({ profile }: { profile: Profile | null }) {
         ) : (
           <Link
             href="/login"
-            className="border-2 border-ink bg-white px-3 py-1.5 text-xs font-bold md:text-sm"
+            className="rounded-full bg-accent px-4 py-1.5 text-xs font-bold text-ink hover:bg-accent-deep md:text-sm"
           >
             Log in
           </Link>
@@ -125,7 +123,7 @@ export default function CustomerLayout({
 
   return (
     <CartProvider>
-      <header className="sticky top-0 z-40 border-b-2 border-ink bg-tarp">
+      <header className="sticky top-0 z-40 border-b border-line bg-paper/95 backdrop-blur">
         {profile === undefined ? (
           <div className="mx-auto max-w-5xl px-4 py-2.5" />
         ) : (

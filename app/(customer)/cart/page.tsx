@@ -44,38 +44,38 @@ export default function CartPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 pt-6">
-      <h1 className="text-3xl font-black tracking-tight">Your cart</h1>
+      <h1 className="font-display text-3xl tracking-tight">Your cart</h1>
 
       {lines.length === 0 ? (
-        <div className="mt-8 border-2 border-dashed border-ink/40 p-8 text-center">
+        <div className="mt-8 rounded-2xl border border-dashed border-line bg-paper p-8 text-center shadow-card">
           <p className="font-bold">Your cart is empty.</p>
           <p className="mt-1 text-sm text-muted">
             Add some snacks from the menu first.
           </p>
           <Link
             href="/menu"
-            className="mt-5 inline-block border-2 border-ink bg-tarp px-5 py-2.5 font-black"
+            className="mt-5 inline-block rounded-full bg-accent px-6 py-2.5 font-bold text-ink hover:bg-accent-deep"
           >
             Browse the menu
           </Link>
         </div>
       ) : (
         <>
-          <ul className="mt-5 border-t-2 border-ink">
+          <ul className="mt-5 overflow-hidden rounded-2xl border border-line bg-paper shadow-card">
             {lines.map(({ product, qty }) => (
               <li
                 key={product.id}
-                className="flex items-center gap-3 border-b-2 border-ink bg-white py-3.5"
+                className="flex items-center gap-3 border-b border-line p-3.5 last:border-0"
               >
                 <ProductArt
                   product={product}
-                  className="h-12 w-12 shrink-0 border-2 border-ink bg-paper p-0.5"
+                  className="h-12 w-12 shrink-0 rounded-xl bg-cream p-0.5"
                 />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline gap-1">
                     <p className="font-bold">{product.name}</p>
                     <span className="leader" aria-hidden />
-                    <p className="font-stub shrink-0 text-sm font-bold">
+                    <p className="shrink-0 text-sm font-bold text-brand">
                       {peso(product.price * qty)}
                     </p>
                   </div>
@@ -83,7 +83,7 @@ export default function CartPage() {
                     <p className="text-xs text-muted">
                       {peso(product.price)} each
                       {qty > product.stock && (
-                        <span className="ml-1 font-bold text-stamp">
+                        <span className="ml-1 font-bold text-cocoa">
                           · only {product.stock} left
                         </span>
                       )}
@@ -100,21 +100,26 @@ export default function CartPage() {
             ))}
           </ul>
 
-          <div className="mt-5 flex items-baseline">
-            <p className="text-lg font-black">Total</p>
-            <span className="leader" aria-hidden />
-            <p className="font-stub text-2xl font-bold">{peso(total)}</p>
+          <div className="mt-5 rounded-2xl border border-line bg-paper p-4 shadow-card">
+            <h2 className="font-display text-lg">Order summary</h2>
+            <div className="mt-3 flex items-baseline">
+              <p className="text-lg font-bold">Total</p>
+              <span className="leader" aria-hidden />
+              <p className="text-2xl font-extrabold text-brand">
+                {peso(total)}
+              </p>
+            </div>
           </div>
 
           <Link
             href="/checkout"
-            className="mt-5 mb-6 block border-2 border-ink bg-tarp py-3.5 text-center text-lg font-black shadow-[4px_4px_0_0_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+            className="mt-5 mb-6 block rounded-full bg-accent py-3.5 text-center text-lg font-bold text-ink shadow-card hover:bg-accent-deep"
           >
             Proceed to checkout
           </Link>
           <Link
             href="/menu"
-            className="mb-6 block text-center text-sm font-bold underline underline-offset-4"
+            className="mb-6 block text-center text-sm font-bold text-brand underline underline-offset-4"
           >
             Continue shopping
           </Link>

@@ -146,16 +146,16 @@ export function ProductForm({
     >
       <form
         onSubmit={submit}
-        className="max-h-[92dvh] w-full overflow-y-auto border-2 border-ink bg-white shadow-[6px_6px_0_0_#1a1a1a] sm:max-w-md"
+        className="max-h-[92dvh] w-full overflow-y-auto rounded-2xl border border-line bg-paper shadow-pop sm:max-w-md"
       >
-        <div className="sticky top-0 flex items-center justify-between border-b-2 border-ink bg-tarp px-4 py-3">
-          <h2 className="font-black">{isEdit ? "Edit product" : "Add product"}</h2>
+        <div className="sticky top-0 flex items-center justify-between rounded-t-2xl bg-brand px-4 py-3 text-white">
+          <h2 className="font-display text-lg">{isEdit ? "Edit product" : "Add product"}</h2>
           <button
             type="button"
             onClick={cancel}
             disabled={saving}
             aria-label="Close"
-            className="h-8 w-8 border-2 border-ink bg-white text-lg font-black leading-none disabled:opacity-40"
+            className="h-8 w-8 rounded-full bg-white/15 text-lg font-bold leading-none hover:bg-white/25 disabled:opacity-40"
           >
             ×
           </button>
@@ -165,7 +165,7 @@ export function ProductForm({
           {error && (
             <p
               role="alert"
-              className="border-2 border-stamp bg-stamp/10 px-3 py-2 text-sm font-bold text-stamp"
+              className="rounded-xl border border-cocoa/30 bg-[#f7e9dc] px-3 py-2 text-sm font-bold text-cocoa"
             >
               {error}
             </p>
@@ -182,7 +182,7 @@ export function ProductForm({
               onChange={(e) => setName(e.target.value)}
               autoFocus
               placeholder="Turbo bun"
-              className="mt-1 w-full border-2 border-ink bg-paper px-3 py-2 font-bold outline-none focus:bg-white"
+              className="mt-1 w-full rounded-xl border border-line bg-cream px-3 py-2 font-bold outline-none placeholder:text-muted/50 focus:border-brand"
             />
           </div>
 
@@ -199,7 +199,7 @@ export function ProductForm({
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
               placeholder="What's inside, one line"
-              className="mt-1 w-full resize-none border-2 border-ink bg-paper px-3 py-2 text-sm outline-none focus:bg-white"
+              className="mt-1 w-full resize-none rounded-xl border border-line bg-cream px-3 py-2 text-sm outline-none placeholder:text-muted/50 focus:border-brand"
             />
           </div>
 
@@ -208,8 +208,8 @@ export function ProductForm({
               <label htmlFor="pf-price" className="block text-xs font-bold text-muted">
                 Price
               </label>
-              <div className="mt-1 flex border-2 border-ink bg-paper">
-                <span className="flex items-center border-r-2 border-ink px-2 font-stub font-bold">
+              <div className="mt-1 flex overflow-hidden rounded-xl border border-line bg-cream focus-within:border-brand">
+                <span className="flex items-center border-r border-line px-3 font-bold text-brand">
                   ₱
                 </span>
                 <input
@@ -220,7 +220,7 @@ export function ProductForm({
                   inputMode="numeric"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
-                  className="w-full bg-transparent px-3 py-2 font-stub font-bold outline-none focus:bg-white"
+                  className="w-full bg-transparent px-3 py-2 font-bold outline-none"
                 />
               </div>
             </div>
@@ -229,14 +229,14 @@ export function ProductForm({
               <label htmlFor="pf-stock" className="block text-xs font-bold text-muted">
                 Stock
               </label>
-              <div className="mt-1 inline-flex w-full border-2 border-ink">
+              <div className="mt-1 inline-flex w-full overflow-hidden rounded-xl border border-line bg-cream">
                 <button
                   type="button"
                   onClick={() =>
                     setStock((s) => String(Math.max(0, (Number(s) || 0) - 1)))
                   }
                   aria-label="Decrease stock"
-                  className="w-10 border-r-2 border-ink bg-paper text-lg font-bold"
+                  className="w-10 border-r border-line text-lg font-bold text-brand"
                 >
                   −
                 </button>
@@ -248,7 +248,7 @@ export function ProductForm({
                   inputMode="numeric"
                   value={stock}
                   onChange={(e) => setStock(e.target.value)}
-                  className="w-full bg-transparent px-2 py-2 text-center font-stub font-bold outline-none focus:bg-white"
+                  className="w-full bg-transparent px-2 py-2 text-center font-bold outline-none"
                 />
                 <button
                   type="button"
@@ -256,7 +256,7 @@ export function ProductForm({
                     setStock((s) => String((Number(s) || 0) + 1))
                   }
                   aria-label="Increase stock"
-                  className="w-10 border-l-2 border-ink bg-paper text-lg font-bold"
+                  className="w-10 border-l border-line text-lg font-bold text-brand"
                 >
                   +
                 </button>
@@ -272,10 +272,10 @@ export function ProductForm({
                 <img
                   src={photoPreview}
                   alt=""
-                  className="h-20 w-20 shrink-0 border-2 border-ink bg-paper object-cover"
+                  className="h-20 w-20 shrink-0 rounded-xl border border-line bg-cream object-cover"
                 />
                 <div className="flex flex-col gap-2">
-                  <label className="inline-block cursor-pointer border-2 border-ink bg-white px-3 py-2 text-center text-sm font-bold">
+                  <label className="inline-block cursor-pointer rounded-full border border-line bg-paper px-4 py-2 text-center text-sm font-bold hover:border-brand">
                     Replace photo
                     <input
                       type="file"
@@ -287,7 +287,7 @@ export function ProductForm({
                   <button
                     type="button"
                     onClick={clearPhoto}
-                    className="border-2 border-stamp px-3 py-2 text-sm font-bold text-stamp"
+                    className="rounded-full border border-cocoa/40 px-4 py-2 text-sm font-bold text-cocoa hover:bg-[#f7e9dc]"
                   >
                     {photoFile ? "Cancel photo" : "Remove photo"}
                   </button>
@@ -295,7 +295,7 @@ export function ProductForm({
               </div>
             ) : (
               <div className="mt-1">
-                <label className="inline-block cursor-pointer border-2 border-ink bg-white px-3 py-2 text-sm font-bold">
+                <label className="inline-block cursor-pointer rounded-full border border-line bg-paper px-4 py-2 text-sm font-bold hover:border-brand">
                   Upload photo
                   <input
                     type="file"
@@ -326,8 +326,10 @@ export function ProductForm({
                     onClick={() => setArt(option.key)}
                     aria-pressed={selected}
                     aria-label={option.label}
-                    className={`border-2 border-ink p-1 text-center ${
-                      selected ? "bg-tarp shadow-[3px_3px_0_0_#1a1a1a]" : "bg-white"
+                    className={`rounded-xl border p-1 text-center ${
+                      selected
+                        ? "border-accent-deep bg-[#fff3d1]"
+                        : "border-line bg-paper"
                     }`}
                   >
                     <FoodArt art={option.key} className="h-10 w-10" />
@@ -347,8 +349,10 @@ export function ProductForm({
                 type="button"
                 onClick={() => setActive((a) => !a)}
                 aria-pressed={active}
-                className={`mt-1 border-2 border-ink px-3 py-2 text-sm font-bold ${
-                  active ? "bg-leaf text-white" : "bg-white text-muted"
+                className={`mt-1 rounded-full px-4 py-2 text-sm font-bold ${
+                  active
+                    ? "bg-fresh text-white"
+                    : "border border-line bg-paper text-muted"
                 }`}
               >
                 {active ? "Available on the site" : "Hidden from the site"}
@@ -357,19 +361,19 @@ export function ProductForm({
           )}
         </div>
 
-        <div className="sticky bottom-0 flex gap-2 border-t-2 border-ink bg-paper p-3">
+        <div className="sticky bottom-0 flex gap-2 border-t border-line bg-paper p-3">
           <button
             type="button"
             onClick={cancel}
             disabled={saving}
-            className="border-2 border-ink bg-white px-4 py-3 font-bold disabled:opacity-40"
+            className="rounded-full border border-line bg-paper px-5 py-3 font-bold hover:border-brand disabled:opacity-40"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={saving}
-            className="flex-1 border-2 border-ink bg-tarp px-4 py-3 font-black disabled:opacity-60"
+            className="flex-1 rounded-full bg-accent px-4 py-3 font-bold text-ink hover:bg-accent-deep disabled:opacity-60"
           >
             {saving ? "Saving…" : isEdit ? "Save changes" : "Add product"}
           </button>

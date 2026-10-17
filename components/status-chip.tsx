@@ -1,26 +1,56 @@
 import type { OrderStatus, PaymentStatus } from "@/lib/types";
 
 const ORDER_STYLES: Record<OrderStatus, { label: string; className: string }> = {
-  pending: { label: "Pending", className: "bg-white text-muted border-muted" },
-  confirmed: { label: "Confirmed", className: "bg-tarp text-ink border-ink" },
-  preparing: { label: "Preparing", className: "bg-tarp-deep text-ink border-ink" },
-  ready: { label: "Ready for pickup", className: "bg-leaf text-white border-ink" },
-  completed: { label: "Completed", className: "bg-ink text-white border-ink" },
-  cancelled: { label: "Cancelled", className: "bg-stamp text-white border-ink" },
+  pending: {
+    label: "Pending",
+    className: "bg-stone-200 text-stone-600",
+  },
+  confirmed: {
+    label: "Confirmed",
+    className: "bg-[#e3edf9] text-brand",
+  },
+  preparing: {
+    label: "Preparing",
+    className: "bg-accent text-ink",
+  },
+  ready: {
+    label: "Ready for pickup",
+    className: "bg-fresh text-white",
+  },
+  completed: {
+    label: "Completed",
+    className: "bg-brand text-white",
+  },
+  cancelled: {
+    label: "Cancelled",
+    className: "bg-stone-200 text-stone-600",
+  },
 };
 
 const PAYMENT_STYLES: Record<PaymentStatus, { label: string; className: string }> = {
-  pending_payment: { label: "Not paid yet", className: "bg-white text-muted border-muted" },
-  for_verification: { label: "For verification", className: "bg-tarp text-ink border-ink" },
-  verified: { label: "Paid", className: "bg-leaf text-white border-ink" },
-  rejected: { label: "Needs resubmission", className: "bg-stamp text-white border-ink" },
+  pending_payment: {
+    label: "Not paid yet",
+    className: "bg-stone-200 text-stone-600",
+  },
+  for_verification: {
+    label: "For verification",
+    className: "bg-[#e3edf9] text-brand",
+  },
+  verified: {
+    label: "Paid",
+    className: "bg-fresh text-white",
+  },
+  rejected: {
+    label: "Needs resubmission",
+    className: "bg-[#f3e2d3] text-cocoa",
+  },
 };
 
 export function OrderChip({ status }: { status: OrderStatus }) {
   const { label, className } = ORDER_STYLES[status];
   return (
     <span
-      className={`inline-flex items-center border-2 px-2 py-0.5 text-xs font-bold ${className}`}
+      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold ${className}`}
     >
       {label}
     </span>
@@ -31,7 +61,7 @@ export function PaymentChip({ status }: { status: PaymentStatus }) {
   const { label, className } = PAYMENT_STYLES[status];
   return (
     <span
-      className={`inline-flex items-center border-2 px-2 py-0.5 text-xs font-bold ${className}`}
+      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold ${className}`}
     >
       {label}
     </span>

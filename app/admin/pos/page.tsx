@@ -111,7 +111,7 @@ export default function PosPage() {
   if (step === "done" && order) {
     return (
       <div>
-        <h1 className="text-2xl font-black">Order taken</h1>
+        <h1 className="font-display text-2xl">Order taken</h1>
         <div className="mt-4">
           <Stub
             orderNumber={order.orderNumber}
@@ -121,12 +121,12 @@ export default function PosPage() {
               <ul className="space-y-1 text-sm">
                 {order.lines.map((line) => (
                   <li key={line.productId} className="flex items-baseline">
-                    <span className="font-stub mr-2 font-bold">
+                    <span className="mr-2 font-bold text-brand">
                       {line.qty}×
                     </span>
                     <span className="truncate">{line.name}</span>
                     <span className="leader" aria-hidden />
-                    <span className="font-stub font-bold">
+                    <span className="font-bold">
                       {peso(line.qty * line.unitPrice)}
                     </span>
                   </li>
@@ -144,7 +144,7 @@ export default function PosPage() {
             setOrder(null);
             setStep("order");
           }}
-          className="mt-5 w-full border-2 border-ink bg-tarp py-3.5 font-black shadow-[4px_4px_0_0_#1a1a1a]"
+          className="mt-5 w-full rounded-full bg-accent py-3.5 font-bold text-ink shadow-card hover:bg-accent-deep"
         >
           New walk-in order
         </button>
@@ -158,27 +158,29 @@ export default function PosPage() {
         <button
           type="button"
           onClick={() => setStep("order")}
-          className="text-sm font-bold underline"
+          className="text-sm font-bold text-brand underline underline-offset-4"
         >
           ← Back to order
         </button>
-        <h1 className="mt-2 text-2xl font-black">Payment</h1>
+        <h1 className="font-display mt-2 text-2xl">Payment</h1>
 
-        <ul className="mt-4 space-y-1.5 border-2 border-ink bg-white p-4">
+        <ul className="mt-4 space-y-1.5 rounded-2xl border border-line bg-paper p-4 shadow-card">
           {lines.map((line) => (
             <li key={line.productId} className="flex items-baseline text-sm">
-              <span className="font-stub mr-2 font-bold">{line.qty}×</span>
+              <span className="mr-2 font-bold text-brand">{line.qty}×</span>
               <span className="truncate">{line.name}</span>
               <span className="leader" aria-hidden />
-              <span className="font-stub font-bold">
+              <span className="font-bold">
                 {peso(line.qty * line.unitPrice)}
               </span>
             </li>
           ))}
-          <li className="flex items-baseline border-t-2 border-dashed border-ink/40 pt-2 font-black">
+          <li className="flex items-baseline border-t-2 border-dashed border-line pt-2 font-bold">
             Total
             <span className="leader" aria-hidden />
-            <span className="font-stub text-xl">{peso(total)}</span>
+            <span className="text-xl font-extrabold text-brand">
+              {peso(total)}
+            </span>
           </li>
         </ul>
 
@@ -193,8 +195,10 @@ export default function PosPage() {
                 type="button"
                 onClick={() => setMethod(m)}
                 aria-pressed={method === m}
-                className={`border-2 border-ink py-4 text-lg font-black uppercase ${
-                  method === m ? "bg-tarp" : "bg-white"
+                className={`rounded-2xl border py-4 text-lg font-extrabold uppercase shadow-card ${
+                  method === m
+                    ? "border-accent-deep bg-accent text-ink"
+                    : "border-line bg-paper text-muted"
                 }`}
               >
                 {m}
@@ -203,10 +207,10 @@ export default function PosPage() {
           </div>
         </fieldset>
 
-        <section className="mt-5 border-2 border-ink bg-white p-4">
+        <section className="mt-5 rounded-2xl border border-line bg-paper p-4 shadow-card">
           <div className="flex items-center justify-between gap-2">
             <div>
-              <h2 className="font-black">Loyalty account</h2>
+              <h2 className="font-display text-lg">Loyalty account</h2>
               <p className="text-sm text-muted">
                 {account
                   ? `Linked: ${account.name}`
@@ -216,7 +220,7 @@ export default function PosPage() {
             <button
               type="button"
               onClick={() => setScanOpen(true)}
-              className="border-2 border-ink bg-ink px-3 py-2 text-sm font-bold text-white"
+              className="rounded-full bg-brand px-4 py-2 text-sm font-bold text-white hover:bg-brand-deep"
             >
               Scan
             </button>
@@ -225,7 +229,7 @@ export default function PosPage() {
             <button
               type="button"
               onClick={() => setAccount(null)}
-              className="mt-3 text-sm font-bold underline"
+              className="mt-3 text-sm font-bold text-cocoa underline underline-offset-4"
             >
               Remove
             </button>
@@ -235,7 +239,7 @@ export default function PosPage() {
         {error && (
           <p
             role="alert"
-            className="mt-4 border-2 border-stamp bg-stamp/10 px-3 py-2 text-sm font-bold text-stamp"
+            className="mt-4 rounded-xl border border-cocoa/30 bg-[#f7e9dc] px-3 py-2 text-sm font-bold text-cocoa"
           >
             {error}
           </p>
@@ -245,7 +249,7 @@ export default function PosPage() {
           type="button"
           onClick={confirmOrder}
           disabled={confirming}
-          className="mt-5 w-full border-2 border-ink bg-tarp py-4 text-lg font-black shadow-[4px_4px_0_0_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-50"
+          className="mt-5 w-full rounded-full bg-accent py-4 text-lg font-bold text-ink shadow-card hover:bg-accent-deep disabled:opacity-50"
         >
           {confirming
             ? "Saving…"
@@ -267,7 +271,7 @@ export default function PosPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-black">Walk-in POS</h1>
+      <h1 className="font-display text-2xl">Walk-in POS</h1>
       <p className="mt-1 text-sm text-muted">Tap items, then take payment.</p>
 
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
@@ -280,25 +284,25 @@ export default function PosPage() {
               type="button"
               disabled={soldOut}
               onClick={() => bump(product.id, 1, product.stock)}
-              className={`relative border-2 border-ink bg-white p-3 text-center ${
-                soldOut ? "opacity-40" : "shadow-[3px_3px_0_0_#1a1a1a]"
+              className={`relative rounded-2xl border border-line bg-paper p-3 text-center shadow-card ${
+                soldOut ? "opacity-50" : ""
               }`}
             >
               {current > 0 && (
-                <span className="absolute -top-2 -right-2 flex h-7 min-w-7 items-center justify-center border-2 border-ink bg-tarp px-1 font-stub text-sm font-bold">
+                <span className="absolute -top-2 -right-2 flex h-7 min-w-7 items-center justify-center rounded-full bg-accent px-1 text-sm font-extrabold text-ink">
                   {current}
                 </span>
               )}
-              <ProductArt product={product} className="mx-auto h-16 w-16" />
+              <ProductArt product={product} className="mx-auto h-16 w-16 rounded-xl" />
               <p className="mt-1 text-sm font-bold leading-tight">
                 {product.name}
               </p>
-              <p className="font-stub text-sm font-bold">
+              <p className="text-sm font-bold text-brand">
                 {peso(product.price)}
               </p>
               <p
                 className={`text-[10px] font-bold ${
-                  soldOut ? "text-stamp" : "text-muted"
+                  soldOut ? "text-stone-500" : "text-fresh"
                 }`}
               >
                 {soldOut ? "Sold out" : `${product.stock} left`}
@@ -308,13 +312,13 @@ export default function PosPage() {
         })}
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t-2 border-ink bg-white p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:mx-auto sm:max-w-5xl">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-paper p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:mx-auto sm:max-w-5xl">
         <div className="flex items-center gap-3 px-1 sm:px-0">
           <div className="flex-1">
             <p className="text-xs font-bold text-muted">
               {lines.reduce((s, l) => s + l.qty, 0)} items
             </p>
-            <p className="font-stub text-2xl font-bold leading-none">
+            <p className="text-2xl leading-none font-extrabold text-brand">
               {peso(total)}
             </p>
           </div>
@@ -322,7 +326,7 @@ export default function PosPage() {
             type="button"
             disabled={lines.length === 0}
             onClick={() => setStep("payment")}
-            className="border-2 border-ink bg-tarp px-6 py-3 font-black shadow-[3px_3px_0_0_#1a1a1a] disabled:opacity-40"
+            className="rounded-full bg-accent px-8 py-3 font-bold text-ink shadow-card hover:bg-accent-deep disabled:opacity-40"
           >
             Charge
           </button>
@@ -331,14 +335,17 @@ export default function PosPage() {
 
       <div className="h-24" />
       <div className="mb-4 flex items-center justify-between">
-        <Link href="/admin" className="text-sm font-bold underline">
+        <Link
+          href="/admin"
+          className="text-sm font-bold text-brand underline underline-offset-4"
+        >
           ← Dashboard
         </Link>
         {lines.length > 0 && (
           <button
             type="button"
             onClick={() => setQty({})}
-            className="text-sm font-bold text-stamp underline"
+            className="text-sm font-bold text-cocoa underline underline-offset-4"
           >
             Clear order
           </button>

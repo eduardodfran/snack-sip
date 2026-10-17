@@ -71,40 +71,46 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <h1 className="text-2xl font-black">Dashboard</h1>
+      <h1 className="font-display text-2xl">Dashboard</h1>
 
       <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="border-2 border-ink bg-white px-3 py-3"
+            className="rounded-2xl border border-line bg-paper px-3 py-3 shadow-card"
           >
             <dt className="text-xs font-bold text-muted">{stat.label}</dt>
-            <dd className="font-stub text-xl font-bold">{stat.value}</dd>
+            <dd className="text-xl font-extrabold text-brand">{stat.value}</dd>
           </div>
         ))}
       </dl>
 
       <section className="mt-6">
-        <h2 className="font-black">Needs attention</h2>
+        <h2 className="font-display text-lg">Needs attention</h2>
         <ul className="mt-2 space-y-2">
-          <li className="flex items-center justify-between border-2 border-ink bg-tarp px-3 py-2.5 text-sm font-bold">
+          <li className="flex items-center justify-between rounded-2xl bg-accent px-4 py-2.5 text-sm font-bold text-ink shadow-card">
             {forVerification.length} payment
             {forVerification.length === 1 ? "" : "s"} for verification
             <Link href="/admin/orders?tab=verify" className="underline">
               Review
             </Link>
           </li>
-          <li className="flex items-center justify-between border-2 border-ink bg-white px-3 py-2.5 text-sm font-bold">
+          <li className="flex items-center justify-between rounded-2xl border border-line bg-paper px-4 py-2.5 text-sm font-bold shadow-card">
             {preparing.length} order{preparing.length === 1 ? "" : "s"} to
             prepare
-            <Link href="/admin/orders?tab=queue" className="underline">
+            <Link
+              href="/admin/orders?tab=queue"
+              className="text-brand underline"
+            >
               Queue
             </Link>
           </li>
-          <li className="flex items-center justify-between border-2 border-ink bg-white px-3 py-2.5 text-sm font-bold">
+          <li className="flex items-center justify-between rounded-2xl border border-line bg-paper px-4 py-2.5 text-sm font-bold shadow-card">
             {ready.length} ready for pickup
-            <Link href="/admin/orders?tab=queue" className="underline">
+            <Link
+              href="/admin/orders?tab=queue"
+              className="text-brand underline"
+            >
               Open
             </Link>
           </li>
@@ -112,12 +118,12 @@ export default function AdminDashboard() {
       </section>
 
       <section className="mt-6 grid gap-4 sm:grid-cols-2">
-        <div className="border-2 border-ink bg-white p-4">
-          <h2 className="font-black">Best seller</h2>
+        <div className="rounded-2xl border border-line bg-paper p-4 shadow-card">
+          <h2 className="font-display text-lg">Best seller</h2>
           {bestSeller ? (
-            <p className="mt-1 font-stub text-lg font-bold">
+            <p className="mt-1 text-lg font-extrabold text-brand">
               {bestSeller[0]}
-              <span className="ml-2 text-muted">×{bestSeller[1]}</span>
+              <span className="ml-2 font-bold text-muted">×{bestSeller[1]}</span>
             </p>
           ) : (
             <p className="mt-1 text-sm text-muted">No sales yet.</p>
@@ -126,8 +132,8 @@ export default function AdminDashboard() {
             Pre-order {preOrders} vs walk-in {walkIns}
           </p>
         </div>
-        <div className="border-2 border-ink bg-white p-4">
-          <h2 className="font-black">Low stock / sold out</h2>
+        <div className="rounded-2xl border border-line bg-paper p-4 shadow-card">
+          <h2 className="font-display text-lg">Low stock / sold out</h2>
           {lowStock.length === 0 ? (
             <p className="mt-1 text-sm text-muted">All good.</p>
           ) : (
@@ -136,8 +142,8 @@ export default function AdminDashboard() {
                 <li key={p.id} className="flex justify-between">
                   <span>{p.name}</span>
                   <span
-                    className={`font-stub font-bold ${
-                      p.stock <= 0 ? "text-stamp" : "text-ink"
+                    className={`font-bold ${
+                      p.stock <= 0 ? "text-cocoa" : "text-ink"
                     }`}
                   >
                     {p.stock}
@@ -148,7 +154,7 @@ export default function AdminDashboard() {
           )}
           <Link
             href="/admin/products"
-            className="mt-3 inline-block text-sm font-bold underline"
+            className="mt-3 inline-block text-sm font-bold text-brand underline"
           >
             Manage products
           </Link>
@@ -157,7 +163,7 @@ export default function AdminDashboard() {
 
       <Link
         href="/admin/pos"
-        className="mt-6 block border-2 border-ink bg-tarp py-3.5 text-center text-lg font-black shadow-[4px_4px_0_0_#1a1a1a]"
+        className="mt-6 block rounded-full bg-accent py-3.5 text-center text-lg font-bold text-ink shadow-card hover:bg-accent-deep"
       >
         Open walk-in POS
       </Link>

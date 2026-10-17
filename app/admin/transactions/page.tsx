@@ -32,28 +32,31 @@ export default function TransactionsPage() {
   return (
     <div>
       <div className="flex items-baseline justify-between">
-        <h1 className="text-2xl font-black">Transactions</h1>
-        <p className="font-stub text-sm font-bold">{peso(total)}</p>
+        <h1 className="font-display text-2xl">Transactions</h1>
+        <p className="text-sm font-extrabold text-brand">{peso(total)}</p>
       </div>
 
       {!loading && orders.length === 0 ? (
-        <p className="mt-6 border-2 border-dashed border-ink/40 p-6 text-center text-sm text-muted">
+        <p className="mt-6 rounded-2xl border border-dashed border-line bg-paper p-6 text-center text-sm text-muted shadow-card">
           No transactions yet.
         </p>
       ) : (
         <ul className="mt-4 grid items-start gap-3 md:grid-cols-2">
           {orders.map((order) => (
-            <li key={order.id} className="border-2 border-ink bg-white p-4">
+            <li
+              key={order.id}
+              className="rounded-2xl border border-line bg-paper p-4 shadow-card"
+            >
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                <span className="font-stub font-bold">{order.orderNumber}</span>
+                <span className="font-bold text-brand">{order.orderNumber}</span>
                 <span className="text-xs text-muted">
                   {shortTime(order.createdAt)}
                 </span>
-                <span className="ml-auto font-stub font-bold">
+                <span className="ml-auto font-bold">
                   {peso(order.total)}
                 </span>
               </div>
-              <p className="mt-1 truncate text-sm text-ink-soft">
+              <p className="mt-1 truncate text-sm text-muted">
                 {order.lines.map((l) => `${l.qty}× ${l.name}`).join(", ")}
               </p>
               <p className="mt-1 text-xs text-muted">

@@ -1,18 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, Courier_Prime } from "next/font/google";
+import { Chango, Montserrat } from "next/font/google";
 import { AuthProvider } from "@/components/auth-provider";
 import "./globals.css";
 
-const archivo = Archivo({
+const montserrat = Montserrat({
   subsets: ["latin"],
-  variable: "--font-archivo",
+  weight: ["400", "600", "700", "800"],
+  variable: "--font-montserrat",
   display: "swap",
 });
 
-const courierPrime = Courier_Prime({
+const chango = Chango({
   subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-courier-prime",
+  weight: ["400"],
+  variable: "--font-chango",
   display: "swap",
 });
 
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#ffce00",
+  themeColor: "#0d4fa3",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -36,7 +37,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${archivo.variable} ${courierPrime.variable} h-full antialiased`}
+      className={`${montserrat.variable} ${chango.variable} h-full antialiased`}
     >
       <body className="min-h-dvh flex flex-col font-sans">
         <AuthProvider>{children}</AuthProvider>

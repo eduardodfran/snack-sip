@@ -97,13 +97,13 @@ function OrdersAdmin() {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-black">Orders</h1>
-        <div className="flex gap-1">
+        <h1 className="font-display text-2xl">Orders</h1>
+        <div className="flex gap-1 rounded-full border border-line bg-paper p-1 shadow-card">
           <button
             type="button"
             onClick={() => setTab("verify")}
-            className={`border-2 border-ink px-3 py-1.5 text-sm font-bold ${
-              tab === "verify" ? "bg-tarp" : "bg-white"
+            className={`rounded-full px-4 py-1.5 text-sm font-bold ${
+              tab === "verify" ? "bg-brand text-white" : "text-muted"
             }`}
           >
             Verify {toVerify.length > 0 && `(${toVerify.length})`}
@@ -111,8 +111,8 @@ function OrdersAdmin() {
           <button
             type="button"
             onClick={() => setTab("queue")}
-            className={`border-2 border-ink px-3 py-1.5 text-sm font-bold ${
-              tab === "queue" ? "bg-tarp" : "bg-white"
+            className={`rounded-full px-4 py-1.5 text-sm font-bold ${
+              tab === "queue" ? "bg-brand text-white" : "text-muted"
             }`}
           >
             Queue ({queue.length})
@@ -121,7 +121,7 @@ function OrdersAdmin() {
       </div>
 
       {message && (
-        <p className="mt-3 border-2 border-ink bg-tarp px-3 py-2 text-sm font-bold">
+        <p className="mt-3 rounded-xl bg-accent px-4 py-2 text-sm font-bold text-ink shadow-card">
           {message}
         </p>
       )}
@@ -129,14 +129,17 @@ function OrdersAdmin() {
       {tab === "verify" && (
         <section className="mt-4 grid items-start gap-4 md:grid-cols-2">
           {!loading && toVerify.length === 0 ? (
-            <p className="border-2 border-dashed border-ink/40 p-6 text-center text-sm text-muted md:col-span-2">
+            <p className="rounded-2xl border border-dashed border-line bg-paper p-6 text-center text-sm text-muted shadow-card md:col-span-2">
               No payments waiting for verification.
             </p>
           ) : (
             toVerify.map((order) => (
-              <article key={order.id} className="border-2 border-ink bg-white">
-                <div className="flex items-baseline justify-between border-b-2 border-ink px-4 py-2.5">
-                  <span className="font-stub font-bold">{order.orderNumber}</span>
+              <article
+                key={order.id}
+                className="overflow-hidden rounded-2xl border border-line bg-paper shadow-card"
+              >
+                <div className="flex items-baseline justify-between bg-cream px-4 py-2.5">
+                  <span className="font-bold text-brand">{order.orderNumber}</span>
                   <span className="text-xs text-muted">
                     {shortTime(order.createdAt)}
                   </span>
@@ -148,7 +151,7 @@ function OrdersAdmin() {
                   <ul className="mt-2 space-y-1 text-sm">
                     {order.lines.map((line) => (
                       <li key={line.productId} className="flex items-baseline">
-                        <span className="font-stub mr-2 font-bold">
+                        <span className="mr-2 font-bold text-brand">
                           {line.qty}×
                         </span>
                         <span>{line.name}</span>
@@ -158,12 +161,12 @@ function OrdersAdmin() {
                   <div className="mt-2 flex items-baseline">
                     <span className="text-sm font-bold">Amount due</span>
                     <span className="leader" aria-hidden />
-                    <span className="font-stub text-xl font-bold">
+                    <span className="text-xl font-extrabold text-brand">
                       {peso(order.total)}
                     </span>
                   </div>
                   {order.gcashReference && (
-                    <p className="mt-1 font-stub text-xs text-muted">
+                    <p className="mt-1 text-xs font-semibold text-muted">
                       Ref: {order.gcashReference}
                     </p>
                   )}
@@ -177,21 +180,21 @@ function OrdersAdmin() {
                     <img
                       src={order.proofUrl}
                       alt={`Payment proof for ${order.orderNumber}`}
-                      className="mt-3 max-h-72 w-full border-2 border-ink object-contain"
+                      className="mt-3 max-h-72 w-full rounded-xl border border-line object-contain"
                     />
                   )}
                   <div className="mt-4 grid grid-cols-2 gap-3">
                     <button
                       type="button"
                       onClick={() => handleVerify(order.id, true)}
-                      className="border-2 border-ink bg-leaf py-3 font-black text-white"
+                      className="rounded-full bg-fresh py-3 font-bold text-white hover:brightness-110"
                     >
                       Verify
                     </button>
                     <button
                       type="button"
                       onClick={() => handleVerify(order.id, false)}
-                      className="border-2 border-ink bg-white py-3 font-black text-stamp"
+                      className="rounded-full border border-cocoa/40 bg-paper py-3 font-bold text-cocoa hover:bg-[#f7e9dc]"
                     >
                       Reject
                     </button>
@@ -216,18 +219,18 @@ function OrdersAdmin() {
               onChange={(e) => setCode(e.target.value)}
               placeholder="Claim code"
               aria-label="Claim code"
-              className="min-w-0 flex-1 border-2 border-ink bg-white px-3 py-2.5 font-stub uppercase"
+              className="min-w-0 flex-1 rounded-full border border-line bg-paper px-4 py-2.5 font-bold tracking-[0.15em] uppercase outline-none placeholder:text-muted/50 focus:border-brand"
             />
             <button
               type="button"
               onClick={() => setScanning(true)}
-              className="shrink-0 border-2 border-ink bg-white px-4 font-black"
+              className="shrink-0 rounded-full border border-line bg-paper px-4 font-bold shadow-card hover:border-brand"
             >
               Scan
             </button>
             <button
               type="submit"
-              className="shrink-0 border-2 border-ink bg-tarp px-4 font-black"
+              className="shrink-0 rounded-full bg-accent px-5 font-bold text-ink shadow-card hover:bg-accent-deep"
             >
               Release
             </button>
@@ -245,27 +248,30 @@ function OrdersAdmin() {
 
           <ul className="mt-4 grid items-start gap-3 md:grid-cols-2">
             {!loading && queue.length === 0 && (
-              <li className="border-2 border-dashed border-ink/40 p-6 text-center text-sm text-muted md:col-span-2">
+              <li className="rounded-2xl border border-dashed border-line bg-paper p-6 text-center text-sm text-muted shadow-card md:col-span-2">
                 No active orders.
               </li>
             )}
             {queue.map((order) => (
-              <li key={order.id} className="border-2 border-ink bg-white p-4">
+              <li
+                key={order.id}
+                className="rounded-2xl border border-line bg-paper p-4 shadow-card"
+              >
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="border-2 border-ink bg-tarp px-2 py-0.5 font-stub text-sm font-bold">
+                  <span className="rounded-full bg-accent px-2.5 py-0.5 text-sm font-extrabold text-ink">
                     #{order.queueNumber}
                   </span>
-                  <span className="font-stub font-bold">
+                  <span className="font-bold text-brand">
                     {order.orderNumber}
                   </span>
-                  <span className="text-xs font-bold text-muted uppercase">
+                  <span className="text-xs font-bold tracking-wide text-muted uppercase">
                     {order.type === "pre_order" ? "pre-order" : "walk-in"}
                   </span>
                   <span className="ml-auto">
                     <OrderChip status={order.status} />
                   </span>
                 </div>
-                <p className="mt-2 text-sm text-ink-soft">
+                <p className="mt-2 text-sm text-muted">
                   {order.lines.map((l) => `${l.qty}× ${l.name}`).join(", ")}
                 </p>
                 {order.pickupLabel && order.type === "pre_order" && (
@@ -276,7 +282,7 @@ function OrdersAdmin() {
                 <button
                   type="button"
                   onClick={() => handleAdvance(order)}
-                  className="mt-3 w-full border-2 border-ink bg-tarp py-2.5 text-sm font-black"
+                  className="mt-3 w-full rounded-full bg-brand py-2.5 text-sm font-bold text-white hover:bg-brand-deep"
                 >
                   {order.status === "confirmed" && "Start preparing"}
                   {order.status === "preparing" && "Mark ready"}

@@ -159,7 +159,7 @@ export default function AdminProductsPage() {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-black">Products</h1>
+          <h1 className="font-display text-2xl">Products</h1>
           <p className="mt-1 text-sm text-muted">
             Availability updates both the website and the POS.
           </p>
@@ -167,7 +167,7 @@ export default function AdminProductsPage() {
         <button
           type="button"
           onClick={() => setDialog({ mode: "add" })}
-          className="border-2 border-ink bg-tarp px-4 py-2.5 font-black shadow-[4px_4px_0_0_#1a1a1a] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0_0_#1a1a1a]"
+          className="rounded-full bg-accent px-5 py-2.5 font-bold text-ink shadow-card hover:bg-accent-deep"
         >
           + Add product
         </button>
@@ -176,31 +176,34 @@ export default function AdminProductsPage() {
       {error && (
         <p
           role="alert"
-          className="mt-3 border-2 border-stamp bg-stamp/10 px-3 py-2 text-sm font-bold text-stamp"
+          className="mt-3 rounded-xl border border-cocoa/30 bg-[#f7e9dc] px-3 py-2 text-sm font-bold text-cocoa"
         >
           {error}
         </p>
       )}
 
       {info && (
-        <p className="mt-3 border-2 border-ink bg-tarp/40 px-3 py-2 text-sm font-bold">
+        <p className="mt-3 rounded-xl border border-line bg-[#fff3d1] px-3 py-2 text-sm font-bold text-cocoa">
           {info}
         </p>
       )}
 
       <ul className="mt-4 space-y-3">
         {products.map((product) => (
-          <li key={product.id} className="border-2 border-ink bg-white p-4">
+          <li
+            key={product.id}
+            className="rounded-2xl border border-line bg-paper p-4 shadow-card"
+          >
             <div className="flex items-start gap-3">
               <ProductArt
                 product={product}
-                className="h-14 w-14 shrink-0 border-2 border-ink bg-paper p-1"
+                className="h-14 w-14 shrink-0 rounded-xl bg-cream p-1"
               />
               <div className="min-w-0 flex-1">
                 <div className="flex items-baseline">
                   <h2 className="font-bold">{product.name}</h2>
                   <span className="leader" aria-hidden />
-                  <span className="font-stub font-bold">
+                  <span className="font-bold text-brand">
                     {peso(product.price)}
                   </span>
                 </div>
@@ -209,24 +212,24 @@ export default function AdminProductsPage() {
             </div>
 
             <div className="mt-3 flex flex-wrap items-center gap-3">
-              <div className="inline-flex items-center border-2 border-ink">
+              <div className="inline-flex items-center rounded-full border border-line bg-cream">
                 <button
                   type="button"
                   onClick={() => bumpStock(product.id, -1)}
                   disabled={product.stock <= 0}
                   aria-label={`Decrease stock of ${product.name}`}
-                  className="h-10 w-10 text-xl font-bold disabled:opacity-30"
+                  className="h-10 w-10 text-xl font-bold text-brand disabled:opacity-30"
                 >
                   −
                 </button>
-                <span className="w-14 text-center font-stub font-bold">
+                <span className="w-14 text-center font-bold">
                   {product.stock}
                 </span>
                 <button
                   type="button"
                   onClick={() => bumpStock(product.id, 1)}
                   aria-label={`Increase stock of ${product.name}`}
-                  className="h-10 w-10 text-xl font-bold"
+                  className="h-10 w-10 text-xl font-bold text-brand"
                 >
                   +
                 </button>
@@ -235,15 +238,17 @@ export default function AdminProductsPage() {
               <button
                 type="button"
                 onClick={() => toggleActive(product.id)}
-                className={`border-2 border-ink px-3 py-2 text-sm font-bold ${
-                  product.active ? "bg-leaf text-white" : "bg-white"
+                className={`rounded-full px-4 py-2 text-sm font-bold ${
+                  product.active
+                    ? "bg-fresh text-white"
+                    : "border border-line bg-paper text-muted"
                 }`}
               >
                 {product.active ? "Available" : "Hidden"}
               </button>
 
               {product.stock <= 0 && (
-                <span className="border-2 border-stamp px-2 py-1 text-xs font-bold text-stamp">
+                <span className="rounded-full bg-stone-200 px-3 py-1 text-xs font-bold text-stone-500">
                   Sold out
                 </span>
               )}
@@ -251,7 +256,7 @@ export default function AdminProductsPage() {
               <button
                 type="button"
                 onClick={() => setDialog({ mode: "edit", product })}
-                className="border-2 border-ink bg-white px-3 py-2 text-sm font-bold"
+                className="rounded-full border border-line bg-paper px-4 py-2 text-sm font-bold hover:border-brand"
               >
                 Edit
               </button>
@@ -260,7 +265,7 @@ export default function AdminProductsPage() {
                 <button
                   type="button"
                   onClick={() => void handleDelete(product.id)}
-                  className="border-2 border-stamp bg-stamp px-3 py-2 text-sm font-bold text-white"
+                  className="rounded-full bg-cocoa px-4 py-2 text-sm font-bold text-white"
                 >
                   Delete for real?
                 </button>
@@ -268,7 +273,7 @@ export default function AdminProductsPage() {
                 <button
                   type="button"
                   onClick={() => setConfirmDeleteId(product.id)}
-                  className="border-2 border-stamp px-3 py-2 text-sm font-bold text-stamp"
+                  className="rounded-full border border-cocoa/40 px-4 py-2 text-sm font-bold text-cocoa hover:bg-[#f7e9dc]"
                 >
                   Delete
                 </button>

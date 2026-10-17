@@ -43,11 +43,11 @@ export default function OrdersPage() {
   if (!profile) {
     return (
       <div className="px-4 pt-8 text-center">
-        <h1 className="text-3xl font-black tracking-tight">My orders</h1>
+        <h1 className="font-display text-3xl tracking-tight">My orders</h1>
         <p className="mt-3 text-muted">Log in to see your orders.</p>
         <Link
           href="/login?next=/orders"
-          className="mt-5 inline-block border-2 border-ink bg-tarp px-5 py-2.5 font-black"
+          className="mt-5 inline-block rounded-full bg-accent px-6 py-2.5 font-bold text-ink hover:bg-accent-deep"
         >
           Log in
         </Link>
@@ -57,26 +57,29 @@ export default function OrdersPage() {
 
   return (
     <div className="px-4 pt-6">
-      <h1 className="text-3xl font-black tracking-tight">My orders</h1>
+      <h1 className="font-display text-3xl tracking-tight">My orders</h1>
+      <p className="mt-1 text-sm text-muted">
+        Track your snacks and save your QR for pickup.
+      </p>
 
       {error && (
         <p
           role="alert"
-          className="mt-4 border-2 border-stamp bg-stamp/10 px-3 py-2 text-sm font-bold text-stamp"
+          className="mt-4 rounded-xl border border-cocoa/30 bg-[#f7e9dc] px-3 py-2 text-sm font-bold text-cocoa"
         >
           {error}
         </p>
       )}
 
       {!error && orders.length === 0 ? (
-        <div className="mt-8 border-2 border-dashed border-ink/40 p-8 text-center">
+        <div className="mt-8 rounded-2xl border border-dashed border-line bg-paper p-8 text-center shadow-card">
           <p className="font-bold">You haven&apos;t ordered yet.</p>
           <p className="mt-1 text-sm text-muted">
             Order ahead — when you arrive, just show your QR.
           </p>
           <Link
             href="/menu"
-            className="mt-5 inline-block border-2 border-ink bg-tarp px-5 py-2.5 font-black"
+            className="mt-5 inline-block rounded-full bg-accent px-6 py-2.5 font-bold text-ink hover:bg-accent-deep"
           >
             Start a pre-order
           </Link>
@@ -87,23 +90,23 @@ export default function OrdersPage() {
             <li key={order.id}>
               <Link
                 href={`/orders/${order.id}`}
-                className="block border-2 border-ink bg-white p-4 shadow-[3px_3px_0_0_#1a1a1a]"
+                className="block rounded-2xl border border-line bg-paper p-4 shadow-card hover:border-brand"
               >
                 <div className="flex items-baseline justify-between gap-2">
-                  <span className="font-stub font-bold">{order.orderNumber}</span>
+                  <span className="font-bold text-brand">
+                    {order.orderNumber}
+                  </span>
                   <span className="text-xs text-muted">
                     {shortTime(order.createdAt)}
                   </span>
                 </div>
-                <p className="mt-1 truncate text-sm text-ink-soft">
+                <p className="mt-1 truncate text-sm text-muted">
                   {order.lines.map((l) => `${l.qty}× ${l.name}`).join(", ")}
                 </p>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
                   <PaymentChip status={order.paymentStatus} />
                   <OrderChip status={order.status} />
-                  <span className="ml-auto font-stub font-bold">
-                    {peso(order.total)}
-                  </span>
+                  <span className="ml-auto font-bold">{peso(order.total)}</span>
                 </div>
                 {order.pickupLabel && (
                   <p className="mt-2 text-xs text-muted">

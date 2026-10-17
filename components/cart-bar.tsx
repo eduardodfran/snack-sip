@@ -40,33 +40,33 @@ export function CartBar() {
       <div className="fixed inset-x-0 bottom-14 z-30 px-3 pb-2 md:hidden">
         <Link
           href="/cart"
-          className="mx-auto flex max-w-lg items-center justify-between border-2 border-ink bg-ink px-4 py-3 text-white shadow-[4px_4px_0_0_#ffce00]"
+          className="mx-auto flex max-w-lg items-center justify-between rounded-2xl bg-brand px-4 py-3 text-white shadow-pop"
         >
           <span className="font-bold">{label}</span>
-          <span className="flex items-center gap-3 font-stub font-bold">
+          <span className="flex items-center gap-3 font-bold">
             {peso(total)}
-            <span className="bg-tarp px-2 py-0.5 text-ink">View cart</span>
+            <span className="rounded-full bg-accent px-3 py-1 text-sm text-ink">
+              View cart
+            </span>
           </span>
         </Link>
       </div>
 
       {/* Desktop: floating card with cart + direct checkout. */}
       <div className="fixed right-6 bottom-6 z-30 hidden w-72 md:block">
-        <div className="border-2 border-ink bg-ink p-4 text-white shadow-[4px_4px_0_0_#ffce00]">
+        <div className="rounded-2xl border border-line bg-paper p-4 shadow-pop">
           <p className="font-bold">{label}</p>
-          <p className="font-stub mt-0.5 text-2xl font-bold">
-            {peso(total)}
-          </p>
+          <p className="mt-0.5 text-2xl font-extrabold">{peso(total)}</p>
           <div className="mt-3 flex gap-2">
             <Link
               href="/cart"
-              className="flex-1 border-2 border-white bg-ink px-3 py-2 text-center text-sm font-bold"
+              className="flex-1 rounded-full border border-line bg-paper px-3 py-2 text-center text-sm font-bold hover:border-brand"
             >
               View cart
             </Link>
             <Link
               href="/checkout"
-              className="flex-1 border-2 border-ink bg-tarp px-3 py-2 text-center text-sm font-black text-ink"
+              className="flex-1 rounded-full bg-accent px-3 py-2 text-center text-sm font-bold text-ink hover:bg-accent-deep"
             >
               Checkout →
             </Link>

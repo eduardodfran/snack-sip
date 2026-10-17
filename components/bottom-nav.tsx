@@ -23,7 +23,7 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-ink bg-white safe-bottom md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper safe-bottom md:hidden"
       aria-label="Main"
     >
       <ul className="mx-auto flex max-w-lg">
@@ -38,21 +38,21 @@ export function BottomNav() {
               <Link
                 href={tab.href}
                 aria-current={active ? "page" : undefined}
-                className={`relative flex min-h-14 flex-col items-center justify-center gap-0.5 text-[11px] font-medium ${
-                  active ? "text-ink" : "text-muted"
+                className={`relative flex min-h-14 flex-col items-center justify-center gap-0.5 text-[11px] font-bold ${
+                  active ? "text-brand" : "text-muted"
                 }`}
               >
                 <span className="relative">
                   <Icon className="h-6 w-6" />
                   {tab.showCount && count > 0 && (
-                    <span className="absolute -top-1.5 -right-2.5 flex h-4 min-w-4 items-center justify-center rounded-full border-2 border-ink bg-tarp px-1 font-stub text-[10px] font-bold leading-none text-ink">
+                    <span className="absolute -top-1.5 -right-2.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold leading-none text-ink">
                       {count}
                     </span>
                   )}
                 </span>
                 {tab.label}
                 {active && (
-                  <span className="absolute bottom-0 left-1/2 h-1 w-10 -translate-x-1/2 rounded-t bg-tarp" />
+                  <span className="absolute bottom-1 h-1 w-8 rounded-full bg-accent" />
                 )}
               </Link>
             </li>

@@ -2,24 +2,36 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import QRCode from "qrcode";
 import { useAuth } from "@/components/auth-provider";
 import { QrImage } from "@/components/qr-image";
 import { LOYALTY } from "@/lib/constants";
-import { fetchRedemptions, redeemReward } from "@/lib/data/api";
-import type { Redemption } from "@/lib/types";
+import {
+  fetchLoyaltyEvents,
+  fetchRedemptions,
+  redeemReward,
+} from "@/lib/data/api";
+import type { LoyaltyEvent, Redemption } from "@/lib/types";
 
 export default function LoyaltyPage() {
   const { profile, refreshProfile } = useAuth();
   const [redemptions, setRedemptions] = useState<Redemption[]>([]);
+  const [events, setEvents] = useState<LoyaltyEvent[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  const loadRedemptions = useCallback(async () => {
+  const loadAll = useCallback(async () => {
     try {
-      setRedemptions(await fetchRedemptions());
+      const [r, e] = await Promise.all([
+        fetchRedemptions(),
+        fetchLoyaltyEvents(),
+      ]);
+      setRedemptions(r);
+      setEvents(e);
     } catch {
       setRedemptions([]);
+      setEvents([]);
     }
   }, []);
 
@@ -27,24 +39,25 @@ export default function LoyaltyPage() {
     if (profile === undefined) return;
     if (!profile) {
       setRedemptions([]);
+      setEvents([]);
       setLoaded(true);
       return;
     }
-    void loadRedemptions().finally(() => setLoaded(true));
-  }, [profile, loadRedemptions]);
+    void loadAll().finally(() => setLoaded(true));
+  }, [profile, loadAll]);
 
   if (profile === undefined || !loaded) return null;
 
   if (!profile) {
     return (
       <div className="px-4 pt-8 text-center">
-        <h1 className="text-3xl font-black tracking-tight">My loyalty</h1>
+        <h1 className="font-display text-3xl tracking-tight">My loyalty</h1>
         <p className="mt-3 text-muted">
           Log in to see and use your points.
         </p>
         <Link
           href="/login?next=/loyalty"
-          className="mt-5 inline-block border-2 border-ink bg-tarp px-5 py-2.5 font-black"
+          className="mt-5 inline-block rounded-full bg-accent px-6 py-2.5 font-bold text-ink hover:bg-accent-deep"
         >
           Log in
         </Link>
@@ -54,30 +67,56 @@ export default function LoyaltyPage() {
 
   const progress = Math.min(profile.points, LOYALTY.rewardAt);
   const canRedeem = profile.points >= LOYALTY.rewardAt;
+  const accountQr = `snack-sip:account:${profile.id}`;
 
   async function handleRedeem() {
     setError("");
     setMessage("");
     try {
       await redeemReward();
-      await Promise.all([refreshProfile(), loadRedemptions()]);
+      await Promise.all([refreshProfile(), loadAll()]);
       setMessage("Reward redeemed — show this screen to staff.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not redeem.");
     }
   }
 
+  async function handleDownloadQr() {
+    try {
+      const url = await QRCode.toDataURL(accountQr, {
+        width: 512,
+        margin: 1,
+        color: { dark: "#1a1a1a", light: "#ffffff" },
+      });
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "snack-sip-account-qr.png";
+      a.click();
+    } catch {
+      setError("Could not generate the QR download.");
+    }
+  }
+
   return (
     <div className="mx-auto max-w-3xl px-4 pt-6">
-      <h1 className="text-3xl font-black tracking-tight">My loyalty</h1>
+      <h1 className="font-display text-3xl tracking-tight">My loyalty</h1>
+      <p className="mt-1 text-sm text-muted">
+        Earn points with every completed pre-order.
+      </p>
 
-      <section className="mt-5 border-2 border-ink bg-ink p-5 text-white">
-        <p className="text-sm font-bold text-tarp">Personal points</p>
-        <p className="font-stub text-5xl font-bold leading-none">
+      <section className="mt-5 rounded-2xl bg-brand p-5 text-white shadow-card">
+        <p className="text-sm font-bold tracking-[0.15em] text-accent">
+          YOUR POINTS
+        </p>
+        <p className="mt-1 text-5xl font-extrabold leading-none">
           {profile.points}
+          <span className="text-xl font-bold text-white/60">
+            {" "}
+            / {LOYALTY.rewardAt}
+          </span>
         </p>
         <div
-          className="mt-4 h-4 border-2 border-white bg-white/10"
+          className="mt-4 h-4 overflow-hidden rounded-full bg-white/20"
           role="progressbar"
           aria-valuenow={progress}
           aria-valuemin={0}
@@ -85,87 +124,117 @@ export default function LoyaltyPage() {
           aria-label="Reward progress"
         >
           <div
-            className="h-full bg-tarp transition-[width] duration-500"
+            className="h-full rounded-full bg-accent transition-[width] duration-500"
             style={{ width: `${(progress / LOYALTY.rewardAt) * 100}%` }}
           />
         </div>
-        <p className="mt-2 font-stub text-sm">
-          {profile.points} / {LOYALTY.rewardAt} points —{" "}
+        <p className="mt-2 text-sm font-semibold">
           {canRedeem
-            ? "reward ready!"
+            ? "Reward ready!"
             : `${LOYALTY.rewardAt - profile.points} more to unlock a reward`}
         </p>
       </section>
 
       <div className="mt-5 grid gap-5 md:grid-cols-2 md:items-start">
-        <section className="border-2 border-ink bg-white p-4">
-          <h2 className="font-black">Reward</h2>
+        <section className="rounded-2xl border border-line bg-paper p-4 shadow-card">
+          <h2 className="font-display text-lg">Reward</h2>
           <div className="mt-2 flex items-baseline">
             <span>{LOYALTY.rewardLabel}</span>
             <span className="leader" aria-hidden />
-            <span className="font-stub font-bold">{LOYALTY.rewardAt} pts</span>
+            <span className="shrink-0 font-bold text-brand">
+              {LOYALTY.rewardAt} pts
+            </span>
           </div>
           <button
             type="button"
             onClick={handleRedeem}
             disabled={!canRedeem}
-            className="mt-4 w-full border-2 border-ink bg-tarp py-3 font-black disabled:bg-white disabled:text-muted disabled:border-muted"
+            className="mt-4 w-full rounded-full bg-accent py-3 font-bold text-ink hover:bg-accent-deep disabled:bg-stone-200 disabled:text-stone-500"
           >
             {canRedeem ? "Redeem reward" : "Not enough points yet"}
           </button>
           {message && (
-            <p className="mt-3 border-2 border-leaf bg-leaf/10 px-3 py-2 text-sm font-bold text-leaf">
+            <p className="mt-3 rounded-xl bg-[#e3f2e9] px-3 py-2 text-sm font-bold text-fresh">
               {message}
             </p>
           )}
           {error && (
             <p
               role="alert"
-              className="mt-3 border-2 border-stamp bg-stamp/10 px-3 py-2 text-sm font-bold text-stamp"
+              className="mt-3 rounded-xl border border-cocoa/30 bg-[#f7e9dc] px-3 py-2 text-sm font-bold text-cocoa"
             >
               {error}
             </p>
           )}
+          {redemptions.length > 0 && (
+            <ul className="mt-3 space-y-2 border-t border-dashed border-line pt-3">
+              {redemptions.map((r) => (
+                <li
+                  key={r.id}
+                  className="flex items-baseline text-sm"
+                >
+                  <span className="font-bold">{r.label}</span>
+                  <span className="leader" aria-hidden />
+                  <span className="text-xs text-muted">
+                    {new Date(r.redeemedAt).toLocaleDateString("en-PH")}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
 
-        <section className="border-2 border-ink bg-white p-4">
-          <h2 className="font-black">Account QR</h2>
+        <section className="rounded-2xl border border-line bg-paper p-4 shadow-card">
+          <h2 className="font-display text-lg">My QR code</h2>
           <p className="mt-1 text-sm text-muted">
             Scan this at the booth to link walk-in purchases to your points.
             Reusable.
           </p>
           <div className="mt-3 flex flex-col items-center">
             <QrImage
-              value={`snack-sip:account:${profile.id}`}
+              value={accountQr}
               alt="Your account QR code"
               size={176}
             />
-            <p className="mt-2 font-stub text-xs">{profile.id.slice(0, 8)}</p>
+            <p className="mt-2 text-xs font-bold tracking-[0.15em] text-muted">
+              {profile.id.slice(0, 8).toUpperCase()}
+            </p>
           </div>
+          <button
+            type="button"
+            onClick={handleDownloadQr}
+            className="mt-4 w-full rounded-full bg-brand py-2.5 text-sm font-bold text-white hover:bg-brand-deep"
+          >
+            Download QR
+          </button>
           <Link
             href="/profile"
-            className="mt-4 block border-2 border-ink py-2.5 text-center text-sm font-bold"
+            className="mt-2 block rounded-full border border-line py-2.5 text-center text-sm font-bold hover:border-brand"
           >
             Manage account
           </Link>
         </section>
       </div>
 
-      <section className="mt-5 border-2 border-ink bg-white p-4">
-        <h2 className="font-black">Redeemed rewards</h2>
-        {redemptions.length === 0 ? (
-          <p className="mt-2 text-sm text-muted">None yet.</p>
+      <section className="mt-5 rounded-2xl border border-line bg-paper p-4 shadow-card">
+        <h2 className="font-display text-lg">Points history</h2>
+        {events.length === 0 ? (
+          <p className="mt-2 text-sm text-muted">
+            No points yet — complete an order to start earning.
+          </p>
         ) : (
-          <ul className="mt-2 space-y-2">
-            {redemptions.map((r) => (
-              <li
-                key={r.id}
-                className="flex items-baseline border-b border-dashed border-ink/30 pb-2 text-sm last:border-0"
-              >
-                <span className="font-bold">{r.label}</span>
+          <ul className="mt-2 divide-y divide-dashed divide-line">
+            {events.map((e) => (
+              <li key={e.id} className="flex items-baseline py-2 text-sm">
+                <span className="font-bold">
+                  {e.kind === "preorder_bonus"
+                    ? "Pre-order bonus"
+                    : "Purchase points"}
+                </span>
                 <span className="leader" aria-hidden />
-                <span className="font-stub text-xs">
-                  {new Date(r.redeemedAt).toLocaleDateString("en-PH")}
+                <span className="font-bold text-fresh">+{e.points}</span>
+                <span className="ml-2 text-xs text-muted">
+                  {new Date(e.createdAt).toLocaleDateString("en-PH")}
                 </span>
               </li>
             ))}

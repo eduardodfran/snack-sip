@@ -36,7 +36,7 @@ export function QrImage({
   if (error) {
     return (
       <div
-        className="flex items-center justify-center border-2 border-ink bg-white p-4 text-center text-sm"
+        className="flex items-center justify-center rounded-xl border border-line bg-paper p-4 text-center text-sm"
         style={{ width: size, height: size }}
       >
         QR unavailable — type the code instead
@@ -51,7 +51,7 @@ export function QrImage({
       width={size}
       height={size}
       alt={alt}
-      className="border-2 border-ink bg-white"
+      className="rounded-xl border border-line bg-white"
       style={{ width: size, height: size }}
     />
   );

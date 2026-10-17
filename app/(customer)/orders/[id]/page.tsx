@@ -32,7 +32,7 @@ export default function OrderDetailPage() {
         setLoaded(true);
       })
       .catch(() => {
-        if (cancelled) return;
+        if (!cancelled) return;
         setOrder(null);
         setLoaded(true);
       });
@@ -46,10 +46,10 @@ export default function OrderDetailPage() {
   if (!order) {
     return (
       <div className="px-4 pt-8 text-center">
-        <h1 className="text-3xl font-black">Order not found</h1>
+        <h1 className="font-display text-3xl">Order not found</h1>
         <Link
           href="/orders"
-          className="mt-5 inline-block border-2 border-ink bg-tarp px-5 py-2.5 font-black"
+          className="mt-5 inline-block rounded-full bg-accent px-6 py-2.5 font-bold text-ink hover:bg-accent-deep"
         >
           My orders
         </Link>
@@ -59,12 +59,16 @@ export default function OrderDetailPage() {
 
   const qrValue = `${SITE_URL}/admin/verify?code=${order.claimCode}`;
   const stepIndex = STEPS.findIndex((s) => s.key === order.status);
+  const trackingActive = stepIndex >= 0 && order.status !== "cancelled";
 
   return (
     <div className="mx-auto max-w-xl px-4 pt-6">
       <div className="flex items-center justify-between gap-2">
-        <h1 className="text-2xl font-black tracking-tight">Order details</h1>
-        <Link href="/orders" className="text-sm font-bold underline">
+        <h1 className="font-display text-2xl tracking-tight">Order details</h1>
+        <Link
+          href="/orders"
+          className="text-sm font-bold text-brand underline underline-offset-4"
+        >
           All orders
         </Link>
       </div>
@@ -77,7 +81,7 @@ export default function OrderDetailPage() {
       {order.status === "pending" && order.paymentStatus === "pending_payment" && (
         <Link
           href={`/payment/${order.id}`}
-          className="mt-4 block border-2 border-ink bg-tarp py-3 text-center font-black"
+          className="mt-4 block rounded-full bg-accent py-3 text-center font-bold text-ink shadow-card hover:bg-accent-deep"
         >
           Pay with GCash now
         </Link>
@@ -97,18 +101,20 @@ export default function OrderDetailPage() {
                   key={line.productId}
                   className="flex items-baseline text-sm"
                 >
-                  <span className="font-stub mr-2 font-bold">{line.qty}×</span>
+                  <span className="mr-2 font-bold text-brand">{line.qty}×</span>
                   <span className="truncate">{line.name}</span>
                   <span className="leader" aria-hidden />
-                  <span className="font-stub font-bold">
+                  <span className="font-bold">
                     {peso(line.qty * line.unitPrice)}
                   </span>
                 </li>
               ))}
-              <li className="flex items-baseline border-t-2 border-dashed border-ink/40 pt-2 font-black">
+              <li className="flex items-baseline border-t-2 border-dashed border-line pt-2 font-bold">
                 Total
                 <span className="leader" aria-hidden />
-                <span className="font-stub text-lg">{peso(order.total)}</span>
+                <span className="text-lg font-extrabold text-brand">
+                  {peso(order.total)}
+                </span>
               </li>
             </ul>
           }
@@ -119,19 +125,19 @@ export default function OrderDetailPage() {
         order.status === "preparing" ||
         order.status === "ready" ||
         order.status === "completed") && (
-        <section className="mt-6">
-          <h2 className="font-black">Order QR</h2>
+        <section className="mt-6 rounded-2xl border border-line bg-paper p-5 text-center shadow-card">
+          <h2 className="font-display text-lg">Order QR</h2>
           <p className="mt-1 text-sm text-muted">
             {order.status === "completed"
               ? "Claimed — thank you!"
               : "Show this at the booth when you arrive."}
           </p>
-          <div className="mt-3 flex flex-col items-center border-2 border-ink bg-white p-5">
+          <div className="mt-3 flex flex-col items-center">
             <QrImage
               value={qrValue}
               alt={`QR code for order ${order.orderNumber}`}
             />
-            <p className="mt-3 font-stub text-xl font-bold">
+            <p className="mt-3 text-xl font-extrabold tracking-[0.15em] text-brand">
               {order.claimCode}
             </p>
             <p className="mt-1 text-center text-xs text-muted">
@@ -141,46 +147,86 @@ export default function OrderDetailPage() {
         </section>
       )}
 
-      <section className="mt-6">
-        <h2 className="font-black">Status</h2>
-        <ol className="mt-3 space-y-0">
-          {STEPS.map((step, i) => {
-            const done = stepIndex >= i && order.status !== "cancelled";
-            const current = stepIndex === i;
-            return (
-              <li key={step.key} className="flex gap-3">
-                <div className="flex flex-col items-center">
-                  <span
-                    className={`h-4 w-4 border-2 border-ink ${
-                      done ? "bg-tarp" : "bg-white"
-                    } ${current ? "ring-2 ring-ink ring-offset-2" : ""}`}
-                  />
-                  {i < STEPS.length - 1 && (
+      <section className="mt-6 rounded-2xl border border-line bg-paper p-5 shadow-card">
+        <h2 className="font-display text-lg">Status</h2>
+        {trackingActive ? (
+          <ol className="mt-4 flex items-start" aria-label="Order progress">
+            {STEPS.map((step, i) => {
+              const done = stepIndex >= i;
+              const current = stepIndex === i;
+              return (
+                <li key={step.key} className="flex-1 last:flex-none">
+                  <div className="flex items-center">
                     <span
-                      className={`w-0.5 flex-1 ${
-                        stepIndex > i ? "bg-ink" : "bg-ink/20"
-                      }`}
+                      aria-current={current ? "step" : undefined}
+                      className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-extrabold ${
+                        done
+                          ? "bg-brand text-white"
+                          : "bg-cream text-muted"
+                      } ${current ? "ring-2 ring-accent ring-offset-2" : ""}`}
+                    >
+                      {done ? "✓" : i + 1}
+                    </span>
+                    {i < STEPS.length - 1 && (
+                      <span
+                        aria-hidden
+                        className={`mx-1 h-1 flex-1 rounded-full ${
+                          stepIndex > i ? "bg-brand" : "bg-cream"
+                        }`}
+                      />
+                    )}
+                  </div>
+                  <p
+                    className={`mt-1.5 pr-1 text-[11px] leading-tight ${
+                      done ? "font-bold text-ink" : "text-muted"
+                    }`}
+                  >
+                    {step.label}
+                  </p>
+                </li>
+              );
+            })}
+          </ol>
+        ) : (
+          <ol className="mt-3 space-y-0">
+            {STEPS.map((step, i) => {
+              const done = stepIndex >= i && order.status !== "cancelled";
+              const current = stepIndex === i;
+              return (
+                <li key={step.key} className="flex gap-3">
+                  <div className="flex flex-col items-center">
+                    <span
+                      className={`h-4 w-4 rounded-full border-2 border-brand ${
+                        done ? "bg-brand" : "bg-paper"
+                      } ${current ? "ring-2 ring-accent ring-offset-2" : ""}`}
                     />
-                  )}
-                </div>
-                <p
-                  className={`pb-4 text-sm ${
-                    done ? "font-bold" : "text-muted"
-                  }`}
-                >
-                  {step.label}
-                </p>
-              </li>
-            );
-          })}
-        </ol>
+                    {i < STEPS.length - 1 && (
+                      <span
+                        className={`w-0.5 flex-1 ${
+                          stepIndex > i ? "bg-brand" : "bg-line"
+                        }`}
+                      />
+                    )}
+                  </div>
+                  <p
+                    className={`pb-4 text-sm ${
+                      done ? "font-bold" : "text-muted"
+                    }`}
+                  >
+                    {step.label}
+                  </p>
+                </li>
+              );
+            })}
+          </ol>
+        )}
         {order.status === "cancelled" && (
-          <p className="border-2 border-stamp bg-stamp/10 px-3 py-2 text-sm font-bold text-stamp">
+          <p className="rounded-xl border border-cocoa/30 bg-[#f7e9dc] px-3 py-2 text-sm font-bold text-cocoa">
             This order was cancelled.
           </p>
         )}
         {order.status === "completed" && order.pointsAwarded > 0 && (
-          <p className="border-2 border-leaf bg-leaf/10 px-3 py-2 text-sm font-bold text-leaf">
+          <p className="rounded-xl bg-[#e3f2e9] px-3 py-2 text-sm font-bold text-fresh">
             +{order.pointsAwarded} loyalty points credited
           </p>
         )}

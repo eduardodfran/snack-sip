@@ -2,6 +2,7 @@ import { getSupabase, isSupabaseConfigured } from "@/lib/supabase/client";
 import { PICKUP_SLOTS, SEED_PRODUCTS } from "@/lib/catalog";
 import { dataUrlToBlob, resizeImage } from "@/lib/image";
 import type {
+  LoyaltyEvent,
   Order,
   OrderLine,
   OrderStatus,
@@ -577,4 +578,22 @@ export async function fetchRedemptions(): Promise<Redemption[]> {
 export async function redeemReward(): Promise<void> {
   const { error } = await db().rpc("redeem_reward");
   if (error) throw new Error(error.message);
+}
+
+export async function fetchLoyaltyEvents(): Promise<LoyaltyEvent[]> {
+  const uid = await currentUserId();
+  if (!uid || !isSupabaseConfigured()) return [];
+  const { data, error } = await db()
+    .from("loyalty_events")
+    .select("id, points, kind, created_at")
+    .eq("customer_id", uid)
+    .order("created_at", { ascending: false })
+    .limit(20);
+  if (error) throw new Error(error.message);
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    points: row.points,
+    kind: row.kind,
+    createdAt: row.created_at,
+  }));
 }

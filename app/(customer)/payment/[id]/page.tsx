@@ -30,7 +30,7 @@ export default function PaymentPage() {
         setLoaded(true);
       })
       .catch(() => {
-        if (cancelled) return;
+        if (!cancelled) return;
         setOrder(null);
         setLoaded(true);
       });
@@ -77,10 +77,10 @@ export default function PaymentPage() {
   if (!order) {
     return (
       <div className="px-4 pt-8 text-center">
-        <h1 className="text-3xl font-black">Order not found</h1>
+        <h1 className="font-display text-3xl">Order not found</h1>
         <Link
           href="/orders"
-          className="mt-5 inline-block border-2 border-ink bg-tarp px-5 py-2.5 font-black"
+          className="mt-5 inline-block rounded-full bg-accent px-6 py-2.5 font-bold text-ink hover:bg-accent-deep"
         >
           My orders
         </Link>
@@ -91,22 +91,24 @@ export default function PaymentPage() {
   if (submitted) {
     return (
       <div className="mx-auto max-w-xl px-4 pt-8">
-        <div className="border-2 border-ink bg-tarp p-6">
-          <p className="font-stub text-sm font-bold">Order {order.orderNumber}</p>
-          <h1 className="mt-1 text-3xl font-black leading-tight">
+        <div className="rounded-2xl bg-brand p-6 text-white shadow-card">
+          <p className="text-sm font-bold tracking-[0.15em] text-accent">
+            ORDER {order.orderNumber}
+          </p>
+          <h1 className="font-display mt-1 text-3xl leading-tight">
             Payment submitted
           </h1>
           <p className="mt-2 text-sm font-bold">
             For verification — this isn&apos;t confirmed yet.
           </p>
-          <p className="mt-3 text-sm text-ink-soft">
+          <p className="mt-3 text-sm text-white/80">
             We&apos;ll check your proof first. Once verified, your Order QR
             will appear in My Orders.
           </p>
         </div>
         <Link
           href={`/orders/${order.id}`}
-          className="mt-5 block border-2 border-ink bg-white py-3 text-center font-black"
+          className="mt-5 block rounded-full border border-line bg-paper py-3 text-center font-bold shadow-card hover:border-brand"
         >
           Track this order
         </Link>
@@ -116,27 +118,31 @@ export default function PaymentPage() {
 
   return (
     <div className="mx-auto max-w-xl px-4 pt-6">
-      <p className="font-stub text-sm font-bold text-muted">
+      <p className="text-sm font-bold tracking-[0.15em] text-muted">
         {order.orderNumber}
       </p>
-      <h1 className="mt-1 text-3xl font-black tracking-tight">
+      <h1 className="font-display mt-1 text-3xl tracking-tight">
         Pay with GCash
       </h1>
 
-      <section className="mt-5 border-2 border-ink bg-white">
-        <div className="border-b-2 border-ink bg-ink px-4 py-3 text-white">
-          <p className="text-xs font-bold text-tarp">Send payment to</p>
-          <p className="text-xl font-black">{GCASH.name}</p>
-          <p className="font-stub text-lg font-bold">{GCASH.number}</p>
+      <section className="mt-5 overflow-hidden rounded-2xl border border-line bg-paper shadow-card">
+        <div className="bg-brand px-4 py-4 text-white">
+          <p className="text-xs font-bold tracking-[0.15em] text-accent">
+            SEND PAYMENT TO
+          </p>
+          <p className="text-xl font-extrabold">{GCASH.name}</p>
+          <p className="text-lg font-bold">{GCASH.number}</p>
         </div>
         <div className="flex items-baseline px-4 py-4">
           <span className="font-bold">Amount due</span>
           <span className="leader" aria-hidden />
-          <span className="font-stub text-3xl font-bold">{peso(order.total)}</span>
+          <span className="text-3xl font-extrabold text-brand">
+            {peso(order.total)}
+          </span>
         </div>
       </section>
 
-      <ol className="mt-5 space-y-2 text-sm text-ink-soft">
+      <ol className="mt-5 space-y-2 text-sm text-muted">
         <li>
           <strong className="text-ink">1.</strong> Open GCash and send{" "}
           <strong>{peso(order.total)}</strong> to the number above.
@@ -161,7 +167,7 @@ export default function PaymentPage() {
             type="file"
             accept="image/*"
             onChange={handleFile}
-            className="mt-1 block w-full border-2 border-ink bg-white p-2 text-sm file:mr-3 file:border-2 file:border-ink file:bg-tarp file:px-3 file:py-1.5 file:font-bold"
+            className="mt-1 block w-full rounded-xl border border-line bg-paper p-2 text-sm file:mr-3 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:font-bold file:text-ink"
             required
           />
         </label>
@@ -171,7 +177,7 @@ export default function PaymentPage() {
           <img
             src={proof}
             alt="Payment proof preview"
-            className="mt-3 max-h-56 border-2 border-ink"
+            className="mt-3 max-h-56 rounded-2xl border border-line"
           />
         )}
 
@@ -184,14 +190,14 @@ export default function PaymentPage() {
             value={reference}
             onChange={(e) => setReference(e.target.value)}
             placeholder="e.g. 1234567890"
-            className="mt-1 w-full border-2 border-ink bg-white px-3 py-2.5 font-stub"
+            className="mt-1 w-full rounded-xl border border-line bg-paper px-3 py-2.5 outline-none placeholder:text-muted/60 focus:border-brand"
           />
         </label>
 
         {error && (
           <p
             role="alert"
-            className="mt-4 border-2 border-stamp bg-stamp/10 px-3 py-2 text-sm font-bold text-stamp"
+            className="mt-4 rounded-xl border border-cocoa/30 bg-[#f7e9dc] px-3 py-2 text-sm font-bold text-cocoa"
           >
             {error}
           </p>
@@ -200,7 +206,7 @@ export default function PaymentPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="mt-5 mb-6 w-full border-2 border-ink bg-tarp py-3.5 text-lg font-black shadow-[4px_4px_0_0_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-50"
+          className="mt-5 mb-6 w-full rounded-full bg-accent py-3.5 text-lg font-bold text-ink shadow-card hover:bg-accent-deep disabled:opacity-50"
         >
           {submitting ? "Submitting…" : "Submit payment proof"}
         </button>

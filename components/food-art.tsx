@@ -42,7 +42,7 @@ export function FoodArt({ art, className }: { art: ArtKey } & Props) {
             strokeWidth="3"
             strokeLinejoin="round"
           />
-          <path d="M64 46 H84 M64 56 H86 M64 66 H84" stroke="#e23d28" strokeWidth="4" strokeLinecap="round" />
+          <path d="M64 46 H84 M64 56 H86 M64 66 H84" stroke="#623a27" strokeWidth="4" strokeLinecap="round" />
           <path d="M66 51 H84 M66 71 H82" stroke="#15803d" strokeWidth="3" strokeLinecap="round" />
         </Frame>
       );
@@ -57,7 +57,7 @@ export function FoodArt({ art, className }: { art: ArtKey } & Props) {
             strokeWidth="4"
           />
           <path d="M60 34 V90 M44 40 L52 90 M76 40 L68 90" stroke={stroke} strokeWidth="3" />
-          <circle cx="60" cy="30" r="7" fill="#e23d28" stroke={stroke} strokeWidth="3" />
+          <circle cx="60" cy="30" r="7" fill="#623a27" stroke={stroke} strokeWidth="3" />
         </Frame>
       );
     case "siopao":
@@ -89,7 +89,7 @@ export function FoodArt({ art, className }: { art: ArtKey } & Props) {
           <rect x="32" y="30" width="56" height="20" rx="6" fill="#e8a13c" stroke={stroke} strokeWidth="4" />
           <path d="M40 30 V50 M60 30 V50 M80 30 V50 M34 50 V72 M60 50 V72 M86 50 V72" stroke={stroke} strokeWidth="2.5" />
           <rect x="50" y="20" width="20" height="12" rx="2" fill="#ffce00" stroke={stroke} strokeWidth="3" />
-          <path d="M56 20 C56 12 64 12 64 20" stroke="#e23d28" strokeWidth="3" strokeLinecap="round" />
+          <path d="M56 20 C56 12 64 12 64 20" stroke="#623a27" strokeWidth="3" strokeLinecap="round" />
         </Frame>
       );
     case "palamig":
@@ -108,7 +108,7 @@ export function FoodArt({ art, className }: { art: ArtKey } & Props) {
           <rect x="52" y="84" width="14" height="10" rx="2" fill="#2b1a10" stroke={stroke} strokeWidth="2.5" />
           <path d="M32 30 H88" stroke={stroke} strokeWidth="4" strokeLinecap="round" />
           <rect x="30" y="22" width="60" height="10" rx="4" fill="#ffce00" stroke={stroke} strokeWidth="3.5" />
-          <path d="M74 26 L88 6" stroke="#e23d28" strokeWidth="5" strokeLinecap="round" />
+          <path d="M74 26 L88 6" stroke="#623a27" strokeWidth="5" strokeLinecap="round" />
         </Frame>
       );
   }

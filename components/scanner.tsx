@@ -62,26 +62,26 @@ export function Scanner({ title, onResult, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/80 p-4">
-      <div className="w-full max-w-sm border-2 border-ink bg-white">
-        <div className="flex items-center justify-between border-b-2 border-ink bg-tarp px-4 py-2.5">
-          <h2 className="font-black">{title}</h2>
+      <div className="w-full max-w-sm rounded-2xl border border-line bg-paper shadow-pop">
+        <div className="flex items-center justify-between rounded-t-2xl bg-brand px-4 py-2.5 text-white">
+          <h2 className="font-bold">{title}</h2>
           <button
             type="button"
             onClick={onClose}
-            className="border-2 border-ink bg-white px-2 py-1 text-sm font-bold"
+            className="rounded-full bg-white/15 px-3 py-1 text-sm font-bold hover:bg-white/25"
           >
             Close
           </button>
         </div>
         <div className="p-4">
-          <div id={regionId} className="min-h-56 bg-ink" />
+          <div id={regionId} className="min-h-56 overflow-hidden rounded-xl bg-ink" />
           {starting && !error && (
             <p className="mt-2 text-center text-sm text-muted">
               Starting camera…
             </p>
           )}
           {error && (
-            <p className="mt-2 border-2 border-stamp bg-stamp/10 px-3 py-2 text-sm font-bold text-stamp">
+            <p className="mt-2 rounded-xl border border-cocoa/30 bg-[#f7e9dc] px-3 py-2 text-sm font-bold text-cocoa">
               {error}
             </p>
           )}

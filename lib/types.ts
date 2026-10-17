@@ -91,3 +91,10 @@ export type Redemption = {
   label: string;
   redeemedAt: string;
 };
+
+export type LoyaltyEvent = {
+  id: number;
+  points: number;
+  kind: "base" | "preorder_bonus";
+  createdAt: string;
+};

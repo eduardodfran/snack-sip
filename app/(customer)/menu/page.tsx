@@ -31,90 +31,85 @@ export default function MenuPage() {
   if (!loaded) return null;
 
   return (
-    <div>
-      <div className="border-b-2 border-ink bg-ink px-4 py-3 text-white">
-        <p className="text-sm font-bold">
-          Pre-order — pay now, claim at the booth with your QR.
-        </p>
-      </div>
-
-      <h1 className="px-4 pt-6 pb-3 text-3xl font-black tracking-tight md:text-4xl">
+    <div className="px-4 pt-6 pb-4">
+      <p className="text-xs font-bold tracking-[0.2em] text-brand">
+        TECHNO FAIR · OCTOBER 20
+      </p>
+      <h1 className="font-display mt-1 text-3xl tracking-tight md:text-4xl">
         Menu
       </h1>
+      <p className="mt-1 text-sm text-muted">
+        Pre-order — pay now, claim at the booth with your QR.
+      </p>
 
-      <ul className="border-t-2 border-ink">
+      <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {products.map((product) => {
           const qty = cart.qtyOf(product.id);
           const soldOut = product.stock <= 0 || !product.active;
           return (
             <li
               key={product.id}
-              className={`flex items-start gap-3 border-b-2 border-ink px-4 py-4 ${
-                soldOut ? "bg-white/60" : "bg-white"
+              className={`rounded-2xl border border-line bg-paper p-4 shadow-card ${
+                soldOut ? "opacity-70" : ""
               }`}
             >
-              <div
-                className={`relative h-16 w-16 shrink-0 border-2 border-ink bg-paper ${
-                  soldOut ? "opacity-45" : ""
-                }`}
-              >
-                <ProductArt product={product} className="h-full w-full" />
+              <div className="relative overflow-hidden rounded-xl bg-cream">
+                <ProductArt
+                  product={product}
+                  className="h-36 w-full object-cover"
+                />
                 {soldOut && (
-                  <span className="absolute inset-0 flex items-center justify-center border-2 border-stamp bg-white/80 text-[10px] font-black text-stamp -rotate-6">
-                    SOLD
-                    <br />
-                    OUT
+                  <span className="absolute top-2 left-2 rounded-full bg-stone-200 px-3 py-1 text-[11px] font-bold text-stone-500">
+                    Sold out
                   </span>
                 )}
               </div>
 
-              <div className="min-w-0 flex-1">
-                <div className="flex items-baseline">
-                  <h2 className="font-bold leading-tight">{product.name}</h2>
-                  <span className="leader" aria-hidden />
-                  <span className="font-stub shrink-0 font-bold">
-                    {peso(product.price)}
+              <div className="mt-3 flex items-baseline">
+                <h2 className="font-bold leading-tight">{product.name}</h2>
+                <span className="leader" aria-hidden />
+                <span className="shrink-0 font-bold text-brand">
+                  {peso(product.price)}
+                </span>
+              </div>
+              <p className="mt-0.5 text-sm leading-snug text-muted">
+                {product.description}
+              </p>
+              <div className="mt-3 flex items-center justify-between gap-2">
+                {soldOut ? (
+                  <span className="text-xs font-bold text-stone-500">
+                    Not available right now
                   </span>
-                </div>
-                <p className="mt-0.5 text-sm leading-snug text-muted">
-                  {product.description}
-                </p>
-                <div className="mt-2 flex items-center justify-between gap-2">
-                  {soldOut ? (
-                    <span className="border-2 border-muted px-2 py-1 text-xs font-bold text-muted">
-                      Sold out
+                ) : (
+                  <>
+                    <span className="text-xs font-bold text-fresh">
+                      {product.stock} left
                     </span>
-                  ) : (
-                    <>
-                      <span className="text-xs font-bold text-leaf">
-                        {product.stock} left
-                      </span>
-                      {qty > 0 ? (
-                        <QtyStepper
-                          label={product.name}
-                          qty={qty}
-                          max={product.stock}
-                          onChange={(next) => cart.setQty(product.id, next)}
-                        />
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => cart.add(product.id, 1)}
-                          className="min-h-10 border-2 border-ink bg-tarp px-4 font-black active:translate-y-px"
-                        >
-                          Add
-                        </button>
-                      )}
-                    </>
-                  )}
-                </div>
+                    {qty > 0 ? (
+                      <QtyStepper
+                        label={product.name}
+                        qty={qty}
+                        max={product.stock}
+                        onChange={(next) => cart.setQty(product.id, next)}
+                      />
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => cart.add(product.id, 1)}
+                        className="min-h-10 rounded-full bg-accent px-5 font-bold text-ink hover:bg-accent-deep"
+                      >
+                        Add
+                      </button>
+                    )}
+                  </>
+                )}
               </div>
             </li>
           );
         })}
       </ul>
 
-      <p className="px-4 py-5 text-sm text-muted">
+      <p className="py-5 text-center text-sm text-muted">
         Walk-in? You can also just drop by the booth — no website needed.
       </p>
     </div>
