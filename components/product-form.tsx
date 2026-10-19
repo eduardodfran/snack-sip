@@ -6,11 +6,15 @@ import { productImageUrl } from "@/lib/data/api";
 import type { ArtKey, Product } from "@/lib/types";
 
 const ART_OPTIONS: { key: ArtKey; label: string }[] = [
-  { key: "saucer", label: "Saucer" },
   { key: "siomai", label: "Siomai" },
+  { key: "rice", label: "Siomai Rice" },
   { key: "siopao", label: "Siopao" },
-  { key: "waffle", label: "Waffle" },
-  { key: "palamig", label: "Palamig" },
+  { key: "siopao-ube", label: "Siopao (Ube)" },
+  { key: "siopao-choco", label: "Siopao (Chocolate)" },
+  { key: "egg", label: "Egg" },
+  { key: "saucer", label: "Saucer (old)" },
+  { key: "waffle", label: "Waffle (old)" },
+  { key: "palamig", label: "Palamig (old)" },
 ];
 
 export type ProductFormValues = {
@@ -42,7 +46,7 @@ export function ProductForm({
   const [price, setPrice] = useState(product ? String(product.price) : "");
   const [stock, setStock] = useState(product ? String(product.stock) : "0");
   const [active, setActive] = useState(product?.active ?? true);
-  const [art, setArt] = useState<ArtKey>(product?.art ?? "saucer");
+  const [art, setArt] = useState<ArtKey>(product?.art ?? "siomai");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [removePhoto, setRemovePhoto] = useState(false);
   const [objectUrl, setObjectUrl] = useState<string | null>(null);

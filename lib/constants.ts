@@ -2,7 +2,7 @@ export const LOYALTY = {
   pesosPerPoint: 25,
   preOrderBonus: 2,
   rewardAt: 10,
-  rewardLabel: "Free flying saucer",
+  rewardLabel: "Free snack",
 } as const;
 
 export const GCASH = {

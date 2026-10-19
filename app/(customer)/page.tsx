@@ -105,8 +105,8 @@ export default function HomePage() {
             </h1>
             <p className="mt-5 max-w-md text-base leading-relaxed text-muted">
               Skip the line and get your favorite snacks ahead of time!
-              Flying saucer, siomai, siopao, waffle, and palamig with
-              gulaman.
+              Siomai, siomai rice, and siopao — big, mini, ube, or chocolate.
+              Add an egg if you like.
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row md:flex-col lg:flex-row">
               <Link
@@ -129,7 +129,7 @@ export default function HomePage() {
             <div>
               <Image
                 src="/HERO.png"
-                alt="Flying saucer stack and palamig with gulaman"
+                alt="Snack &amp; Sip snacks illustration"
                 width={1365}
                 height={2048}
                 priority
@@ -259,8 +259,7 @@ export default function HomePage() {
         <section className="mt-4 rounded-2xl border border-line bg-paper p-5 shadow-card md:mt-0">
           <h2 className="font-display text-xl">Loyalty points</h2>
           <p className="mt-1.5 text-sm font-bold text-brand">
-            ₱25 = 1 point · Pre-order = +2 bonus · 10 points = free flying
-            saucer
+            ₱25 = 1 point · Pre-order = +2 bonus · 10 points = free snack
           </p>
           <p className="mt-2 text-sm text-muted">
             Points land after your order is completed. Scan your Account QR

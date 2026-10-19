@@ -48,6 +48,8 @@ export default function PosPage() {
       unitPrice: p.price,
     }));
   const total = lines.reduce((sum, l) => sum + l.qty * l.unitPrice, 0);
+  // Hidden products stay in the DB for order history but never sell at the booth.
+  const menuProducts = products.filter((product) => product.active);
 
   function bump(id: string, delta: number, max: number) {
     setQty((prev) => {
@@ -275,7 +277,7 @@ export default function PosPage() {
       <p className="mt-1 text-sm text-muted">Tap items, then take payment.</p>
 
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        {products.map((product) => {
+        {menuProducts.map((product) => {
           const current = qty[product.id] ?? 0;
           const soldOut = product.stock <= 0;
           return (

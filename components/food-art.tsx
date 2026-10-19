@@ -20,6 +20,32 @@ function Frame({
   );
 }
 
+function SiopaoArt({
+  className,
+  bun = "#fffdf6",
+  dot = "#fffdf6",
+}: Props & { bun?: string; dot?: string }) {
+  return (
+    <Frame className={className}>
+      <ellipse cx="60" cy="94" rx="44" ry="10" fill="#e8e2d4" stroke={stroke} strokeWidth="4" />
+      <path
+        d="M22 88 C22 48 38 26 60 26 C82 26 98 48 98 88 Z"
+        fill={bun}
+        stroke={stroke}
+        strokeWidth="4"
+      />
+      <path
+        d="M60 26 C56 36 52 40 44 44 M60 26 C64 36 68 40 76 44"
+        stroke={stroke}
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      <circle cx="60" cy="22" r="6" fill={dot} stroke={stroke} strokeWidth="3" />
+      <path d="M40 70 C48 62 72 62 80 70" stroke={stroke} strokeWidth="3" strokeLinecap="round" />
+    </Frame>
+  );
+}
+
 export function FoodArt({ art, className }: { art: ArtKey } & Props) {
   switch (art) {
     case "saucer":
@@ -61,23 +87,58 @@ export function FoodArt({ art, className }: { art: ArtKey } & Props) {
         </Frame>
       );
     case "siopao":
+      return <SiopaoArt className={className} />;
+    case "siopao-ube":
+      return <SiopaoArt className={className} bun="#ead8f4" dot="#b98fd9" />;
+    case "siopao-choco":
+      return <SiopaoArt className={className} bun="#e3c4a6" dot="#7a4a2b" />;
+    case "rice":
       return (
         <Frame className={className}>
-          <ellipse cx="60" cy="94" rx="44" ry="10" fill="#e8e2d4" stroke={stroke} strokeWidth="4" />
+          <ellipse cx="60" cy="92" rx="46" ry="12" fill="#e8e2d4" stroke={stroke} strokeWidth="4" />
           <path
-            d="M22 88 C22 48 38 26 60 26 C82 26 98 48 98 88 Z"
+            d="M28 90 C28 58 42 46 60 46 C78 46 92 58 92 90 Z"
             fill="#fffdf6"
             stroke={stroke}
             strokeWidth="4"
           />
           <path
-            d="M60 26 C56 36 52 40 44 44 M60 26 C64 36 68 40 76 44"
+            d="M38 50 C38 36 46 30 54 30 C62 30 70 36 70 50 Z"
+            fill="#f5d76e"
             stroke={stroke}
             strokeWidth="3"
-            strokeLinecap="round"
           />
-          <circle cx="60" cy="22" r="6" fill="#fffdf6" stroke={stroke} strokeWidth="3" />
-          <path d="M40 70 C48 62 72 62 80 70" stroke={stroke} strokeWidth="3" strokeLinecap="round" />
+          <path d="M54 30 V50 M46 33 L50 50 M62 33 L58 50" stroke={stroke} strokeWidth="2" />
+          <circle cx="54" cy="27" r="4.5" fill="#623a27" stroke={stroke} strokeWidth="2" />
+          <path d="M40 78 C50 72 70 72 80 78" stroke="#623a27" strokeWidth="3" strokeLinecap="round" />
+          <path
+            d="M36 84 C48 80 72 80 84 84"
+            stroke="#15803d"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            opacity="0.7"
+          />
+        </Frame>
+      );
+    case "egg":
+      return (
+        <Frame className={className}>
+          <ellipse cx="60" cy="90" rx="46" ry="12" fill="#e8e2d4" stroke={stroke} strokeWidth="4" />
+          <path
+            d="M26 76 C20 60 32 42 50 40 C58 30 78 30 86 42 C100 48 102 66 92 78 C82 90 38 92 26 76 Z"
+            fill="#fffdf6"
+            stroke={stroke}
+            strokeWidth="4"
+            strokeLinejoin="round"
+          />
+          <circle cx="60" cy="60" r="15" fill="#ffce00" stroke={stroke} strokeWidth="3.5" />
+          <path
+            d="M54 55 C56 51 62 51 64 55"
+            stroke="#fffdf6"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            opacity="0.8"
+          />
         </Frame>
       );
     case "waffle":

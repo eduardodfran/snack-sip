@@ -208,7 +208,7 @@ grant update (name) on table public.profiles to authenticated;
 drop policy if exists "insert own redemptions" on public.redemptions;
 revoke insert on table public.redemptions from anon, authenticated;
 
--- Keep in sync with lib/constants.ts LOYALTY (rewardAt: 10, "Free flying saucer").
+-- Keep in sync with lib/constants.ts LOYALTY (rewardAt: 10, "Free snack").
 create or replace function public.redeem_reward()
 returns public.redemptions
 language plpgsql
@@ -218,7 +218,7 @@ as $$
 declare
   v_uid uuid := auth.uid();
   v_cost integer := 10;
-  v_label text := 'Free flying saucer';
+  v_label text := 'Free snack';
   v_result public.redemptions;
 begin
   if v_uid is null then

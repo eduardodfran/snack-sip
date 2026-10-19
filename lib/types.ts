@@ -33,7 +33,11 @@ export type ArtKey =
   | "siomai"
   | "siopao"
   | "waffle"
-  | "palamig";
+  | "palamig"
+  | "rice"
+  | "egg"
+  | "siopao-ube"
+  | "siopao-choco";
 
 export type CartItem = {
   productId: string;

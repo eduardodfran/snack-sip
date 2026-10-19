@@ -30,15 +30,8 @@ drop policy if exists "admin inserts display settings" on public.display_setting
 create policy "admin inserts display settings" on public.display_settings
   for insert with check (public.is_admin());
 
--- Seed combo promos (display-only; edit on Display -> gear icon).
--- Only fills an empty list so re-running never clobbers admin edits.
-update public.display_settings
-set combos = '[
-  {"name": "Siomai + Palamig", "price": 55, "productIds": ["siomai", "palamig"]},
-  {"name": "Waffle + Palamig",  "price": 50, "productIds": ["waffle", "palamig"]},
-  {"name": "Saucer + Palamig",  "price": 45, "productIds": ["saucer", "palamig"]}
-]'::jsonb
-where id = true and combos = '[]'::jsonb;
+-- Combo promos (display-only; edit on Display -> gear icon).
+-- Starts empty — add promos once the menu is final.
 
 -- ============================================================ done — self-checks (optional)
 -- select * from public.display_settings;              -- expect 1 row

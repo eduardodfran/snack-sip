@@ -241,44 +241,46 @@ function ChoicesSlide({ products }: { products: Product[] }) {
       label: "Drinks",
       items: products.filter((p) => p.art === "palamig").slice(0, 4),
     },
-  ];
+  ].filter((group) => group.items.length > 0);
+  const twoGroups = groups.length > 1;
 
   return (
     <div className="flex h-full flex-col">
       <div>
         <SlideTitle>Snack Choices</SlideTitle>
       </div>
-      <div className="mt-5 grid min-h-0 flex-1 content-center gap-4 md:grid-cols-[3fr_2fr] lg:gap-6">
+      <div
+        className={`mt-5 grid min-h-0 flex-1 content-center gap-4 lg:gap-6 ${
+          twoGroups ? "md:grid-cols-[3fr_2fr]" : ""
+        }`}
+      >
         {groups.map((group) => {
-          const cols = group.items.length > 3 ? 3 : 2;
+          const cols = twoGroups
+            ? group.items.length > 3
+              ? 3
+              : 2
+            : 4;
           const size = sizeForRows(Math.ceil(group.items.length / cols));
+          const gridCols = twoGroups
+            ? group.items.length > 3
+              ? "grid-cols-2 lg:grid-cols-3"
+              : "grid-cols-2"
+            : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4";
           return (
             <div key={group.label} className="min-h-0 min-w-0">
               <h3 className="font-display text-lg text-brand uppercase lg:text-2xl">
                 {group.label}
               </h3>
               <Squiggle className="mt-1 h-2.5 w-28" />
-              <div
-                className={`mt-3 grid gap-3 ${
-                  group.items.length > 3
-                    ? "grid-cols-2 lg:grid-cols-3"
-                    : "grid-cols-2"
-                } lg:gap-4`}
-              >
-                {group.items.length === 0 ? (
-                  <div className="col-span-full flex min-h-[90px] items-center justify-center rounded-xl border border-dashed border-line text-xs font-extrabold tracking-wider text-muted uppercase">
-                    Restocking soon
-                  </div>
-                ) : (
-                  group.items.map((product) => (
-                    <ProductTile
-                      key={product.id}
-                      product={product}
-                      pill
-                      size={size}
-                    />
-                  ))
-                )}
+              <div className={`mt-3 grid gap-3 ${gridCols} lg:gap-4`}>
+                {group.items.map((product) => (
+                  <ProductTile
+                    key={product.id}
+                    product={product}
+                    pill
+                    size={size}
+                  />
+                ))}
               </div>
             </div>
           );
