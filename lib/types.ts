@@ -98,3 +98,27 @@ export type LoyaltyEvent = {
   kind: "base" | "preorder_bonus";
   createdAt: string;
 };
+
+/** Display-only combo promo: shown on the board, rung up manually at POS. */
+export type DisplayCombo = {
+  name: string;
+  price: number;
+  /** Product ids used to render the combo's pictures (missing ids are skipped). */
+  productIds: string[];
+};
+
+export type DisplaySettings = {
+  /** Product spotlighted on Slide 2; null = first available product. */
+  featuredProductId: string | null;
+  soldOutMode: "badge" | "hide";
+  slideSeconds: number;
+  combos: DisplayCombo[];
+};
+
+/** Lean order row for the live queue on the Display board. */
+export type DisplayQueueItem = {
+  id: string;
+  orderNumber: string;
+  queueNumber: number | null;
+  status: OrderStatus;
+};

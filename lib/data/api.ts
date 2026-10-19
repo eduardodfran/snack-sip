@@ -2,6 +2,9 @@ import { getSupabase, isSupabaseConfigured } from "@/lib/supabase/client";
 import { PICKUP_SLOTS, SEED_PRODUCTS } from "@/lib/catalog";
 import { dataUrlToBlob, resizeImage } from "@/lib/image";
 import type {
+  DisplayCombo,
+  DisplayQueueItem,
+  DisplaySettings,
   LoyaltyEvent,
   Order,
   OrderLine,
@@ -596,4 +599,102 @@ export async function fetchLoyaltyEvents(): Promise<LoyaltyEvent[]> {
     kind: row.kind,
     createdAt: row.created_at,
   }));
+}
+
+// ---------------------------------------------------------------- display board
+
+/** Used when Supabase is off or migration 005 hasn't run yet. */
+export const DEFAULT_DISPLAY_SETTINGS: DisplaySettings = {
+  featuredProductId: null,
+  soldOutMode: "badge",
+  slideSeconds: 7,
+  combos: [],
+};
+
+/**
+ * Live queue for the Display board: only the statuses it shows,
+ * oldest queue number first, no customer data.
+ */
+export async function fetchLiveQueue(): Promise<DisplayQueueItem[]> {
+  if (!isSupabaseConfigured()) return [];
+  const { data, error } = await db()
+    .from("orders")
+    .select("id, order_number, queue_number, status")
+    .in("status", ["confirmed", "preparing", "ready"])
+    .order("queue_number", { ascending: true, nullsFirst: false })
+    .order("created_at", { ascending: true });
+  if (error) throw new Error(error.message);
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    orderNumber: row.order_number,
+    queueNumber: row.queue_number,
+    status: row.status as OrderStatus,
+  }));
+}
+
+type DisplaySettingsRow = {
+  featured_product_id: string | null;
+  sold_out_mode: DisplaySettings["soldOutMode"];
+  slide_seconds: number;
+  combos: DisplayCombo[] | null;
+};
+
+function mapDisplaySettings(row: DisplaySettingsRow): DisplaySettings {
+  return {
+    featuredProductId: row.featured_product_id,
+    soldOutMode: row.sold_out_mode === "hide" ? "hide" : "badge",
+    slideSeconds:
+      typeof row.slide_seconds === "number" &&
+      row.slide_seconds >= 4 &&
+      row.slide_seconds <= 20
+        ? row.slide_seconds
+        : DEFAULT_DISPLAY_SETTINGS.slideSeconds,
+    combos: Array.isArray(row.combos)
+      ? row.combos.filter(
+          (c) =>
+            c &&
+            typeof c.name === "string" &&
+            typeof c.price === "number" &&
+            Array.isArray(c.productIds),
+        )
+      : [],
+  };
+}
+
+/**
+ * Board settings. Never throws: before migration 005 runs the board
+ * simply falls back to the defaults above.
+ */
+export async function fetchDisplaySettings(): Promise<DisplaySettings> {
+  if (!isSupabaseConfigured()) return DEFAULT_DISPLAY_SETTINGS;
+  const { data, error } = await db()
+    .from("display_settings")
+    .select("featured_product_id, sold_out_mode, slide_seconds, combos")
+    .eq("id", true)
+    .maybeSingle();
+  if (error || !data) return DEFAULT_DISPLAY_SETTINGS;
+  return mapDisplaySettings(data as DisplaySettingsRow);
+}
+
+export async function updateDisplaySettings(
+  patch: Partial<DisplaySettings>,
+): Promise<void> {
+  const row: Record<string, unknown> = { updated_at: new Date().toISOString() };
+  if ("featuredProductId" in patch) row.featured_product_id = patch.featuredProductId;
+  if ("soldOutMode" in patch) row.sold_out_mode = patch.soldOutMode;
+  if ("slideSeconds" in patch) row.slide_seconds = patch.slideSeconds;
+  if ("combos" in patch) row.combos = patch.combos;
+
+  const { error } = await db()
+    .from("display_settings")
+    .update(row)
+    .eq("id", true);
+  if (error) {
+    if (error.code === "42P01" || /does not exist/i.test(error.message)) {
+      throw new Error(
+        "Display settings table is missing — run supabase/005_display_settings.sql first.",
+      );
+    }
+    throw new Error(error.message);
+  }
 }

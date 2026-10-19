@@ -11,6 +11,7 @@ const TABS = [
   { href: "/admin/orders", label: "Orders" },
   { href: "/admin/products", label: "Products" },
   { href: "/admin/transactions", label: "Transactions" },
+  { href: "/admin/display", label: "Display" },
 ] as const;
 
 export default function AdminLayout({ children }: LayoutProps<"/admin">) {

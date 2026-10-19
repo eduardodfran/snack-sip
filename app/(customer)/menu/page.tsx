@@ -17,7 +17,7 @@ export default function MenuPage() {
     let cancelled = false;
     fetchProducts()
       .then((list) => {
-        if (!cancelled) setProducts(list);
+        if (!cancelled) setProducts(list.filter((product) => product.active));
       })
       .catch(() => {})
       .finally(() => {
@@ -45,7 +45,7 @@ export default function MenuPage() {
       <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {products.map((product) => {
           const qty = cart.qtyOf(product.id);
-          const soldOut = product.stock <= 0 || !product.active;
+          const soldOut = product.stock <= 0;
           return (
             <li
               key={product.id}

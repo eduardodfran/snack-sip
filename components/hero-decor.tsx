@@ -65,7 +65,7 @@ export function Swirl({ className = "" }: { className?: string }) {
   );
 }
 
-function StarburstShape({ className = "" }: { className?: string }) {
+export function StarburstShape({ className = "" }: { className?: string }) {
   const points = Array.from({ length: 24 }, (_, i) => {
     const angle = (Math.PI * 2 * i) / 24;
     const r = i % 2 === 0 ? 50 : 40;
