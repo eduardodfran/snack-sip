@@ -281,10 +281,29 @@ function OrdersAdmin() {
                 <p className="mt-2 text-sm text-muted">
                   {order.lines.map((l) => `${l.qty}× ${l.name}`).join(", ")}
                 </p>
+                {order.customerName && (
+                  <div className="mt-2">
+                    <span className="inline-flex items-center rounded-full border border-brand/40 bg-brand px-3 py-1.5 text-xs font-extrabold tracking-wide text-white shadow-sm">
+                      Ordered by {order.customerName}
+                    </span>
+                  </div>
+                )}
                 {order.pickupLabel && order.type === "pre_order" && (
                   <p className="mt-1 text-xs text-muted">
                     {order.pickupLabel}
                   </p>
+                )}
+                {order.proofUrl && order.paymentMethod === "gcash" && (
+                  <div className="mt-3">
+                    <p className="mb-1 text-[10px] font-bold tracking-[0.15em] text-muted uppercase">
+                      GCash proof
+                    </p>
+                    <img
+                      src={order.proofUrl}
+                      alt={`GCash proof for ${order.orderNumber}`}
+                      className="max-h-40 w-full rounded-xl border border-line object-contain bg-paper"
+                    />
+                  </div>
                 )}
                 <button
                   type="button"

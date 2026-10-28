@@ -426,7 +426,7 @@ export async function fetchOrdersWithProofs(): Promise<Order[]> {
   const orders = await fetchOrders();
   return Promise.all(
     orders.map(async (order) => {
-      if (order.paymentStatus !== "for_verification" || !order.proofPath) {
+      if (!order.proofPath || order.paymentMethod !== "gcash") {
         return order;
       }
       return { ...order, proofUrl: await getProofUrl(order.proofPath) };
