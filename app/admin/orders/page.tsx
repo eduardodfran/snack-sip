@@ -271,6 +271,13 @@ function OrdersAdmin() {
                     <OrderChip status={order.status} />
                   </span>
                 </div>
+                {order.customerName && (
+                  <div className="mt-2">
+                    <span className="inline-flex items-center rounded-full border border-brand/40 bg-brand px-3 py-1.5 text-xs font-extrabold tracking-wide text-white shadow-sm">
+                      Ordered by {order.customerName}
+                    </span>
+                  </div>
+                )}
                 <p className="mt-2 text-sm text-muted">
                   {order.lines.map((l) => `${l.qty}× ${l.name}`).join(", ")}
                 </p>

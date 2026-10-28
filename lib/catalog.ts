@@ -105,10 +105,11 @@ export const SEED_PRODUCTS: Product[] = [
   },
 ]
 
-// Single pickup time: Thursday, Oct 29, 2026 at 1:00 PM @ TCU Foodhall.
-// The slot id is legacy and kept stable because orders.pickup_slot_id references it.
+// Pickup windows for the event day.
+// Keep the ids stable because orders.pickup_slot_id references them.
 export const PICKUP_SLOTS: PickupSlot[] = [
-  { id: 'd1-am', label: 'Oct 29 · 1:00 PM' },
+  { id: 'd1-am', label: 'Oct 29 · 1:30 PM' },
+  { id: 'd1-pm', label: 'Oct 29 · 4:30 PM' },
 ]
 
 export function availability(stock: number): 'available' | 'sold_out' {

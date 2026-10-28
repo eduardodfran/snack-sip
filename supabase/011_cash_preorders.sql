@@ -147,7 +147,7 @@ begin
     'pre_order', v_uid, v_name, v_total,
     p_method,
     case when p_method = 'cash' then 'verified' else 'pending_payment' end,
-    'pending',
+    case when p_method = 'cash' then 'confirmed' else 'pending' end,
     p_pickup_slot_id, p_pickup_label, v_claim
   )
   returning id, order_number into v_order_id, v_order_number;
@@ -156,12 +156,6 @@ begin
     select v_order_id, p.id, p.name, (l->>'qty')::integer, p.price
     from jsonb_array_elements(p_lines) l
     join public.products p on p.id = l->>'productId';
-
-  if p_method = 'cash' then
-    update public.orders
-      set status = 'confirmed'
-      where id = v_order_id;
-  end if;
 
   return jsonb_build_object(
     'id', v_order_id,
