@@ -304,8 +304,5 @@ insert into public.products (id, name, description, price, stock, active, art) v
 on conflict (id) do nothing;
 
 insert into public.pickup_slots (id, label) values
-  ('d1-am', 'Day 1 · 9:00–11:00 AM'),
-  ('d1-pm', 'Day 1 · 1:00–3:00 PM'),
-  ('d2-am', 'Day 2 · 9:00–11:00 AM'),
-  ('d2-pm', 'Day 2 · 1:00–3:00 PM')
+  ('d1-am', 'Oct 29 · 1:00 PM')
 on conflict (id) do nothing;

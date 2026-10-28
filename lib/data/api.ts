@@ -356,11 +356,15 @@ export async function fetchPickupSlots(): Promise<PickupSlot[]> {
   if (error) throw new Error(error.message);
   if (!data || data.length === 0) return PICKUP_SLOTS;
 
-  // The fair date is controlled in code (PICKUP_SLOTS). Keep the DB ids so
-  // existing orders still resolve, but always show the current labels — a
-  // stale `pickup_slots` row must not put the old date on checkout.
+  // The current schedule is controlled in code (PICKUP_SLOTS). Keep the
+  // canonical DB ids so existing orders still resolve, but exclude stale
+  // schedule rows from checkout.
   const labels = new Map(PICKUP_SLOTS.map((slot) => [slot.id, slot.label]));
-  return data.map((slot) => ({
+  const currentSlotIds = new Set(PICKUP_SLOTS.map((slot) => slot.id));
+  const currentSlots = data.filter((slot) => currentSlotIds.has(slot.id));
+  if (currentSlots.length === 0) return PICKUP_SLOTS;
+
+  return currentSlots.map((slot) => ({
     id: slot.id,
     label: labels.get(slot.id) ?? slot.label,
   }));
