@@ -13,7 +13,7 @@ import {
 } from "@/lib/data/api";
 import { PICKUP_SLOTS } from "@/lib/catalog";
 import { peso } from "@/lib/format";
-import type { PickupSlot, Product } from "@/lib/types";
+import type { PaymentMethod, PickupSlot, Product } from "@/lib/types";
 
 export default function CheckoutPage() {
   const cart = useCart();
@@ -23,6 +23,7 @@ export default function CheckoutPage() {
   const [productsLoaded, setProductsLoaded] = useState(false);
   const [slots, setSlots] = useState<PickupSlot[]>(PICKUP_SLOTS);
   const [slotId, setSlotId] = useState(PICKUP_SLOTS[0].id);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("gcash");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -77,6 +78,7 @@ export default function CheckoutPage() {
           productId: item.productId,
           qty: item.qty,
         })),
+        method: paymentMethod,
         pickupSlotId: slot?.id ?? null,
         pickupLabel: slot?.label ?? null,
       });
@@ -185,6 +187,60 @@ export default function CheckoutPage() {
                 ))}
               </div>
             </section>
+
+            <section>
+              <h2 className="text-sm font-bold text-muted">Payment method</h2>
+              <div
+                className="mt-2 space-y-2"
+                role="radiogroup"
+                aria-label="Payment method"
+              >
+                <label
+                  className={`flex cursor-pointer items-start gap-3 rounded-2xl border px-4 py-3 shadow-card ${
+                    paymentMethod === "gcash"
+                      ? "border-brand bg-[#e3edf9]"
+                      : "border-line bg-paper"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="payment-method"
+                    value="gcash"
+                    checked={paymentMethod === "gcash"}
+                    onChange={() => setPaymentMethod("gcash")}
+                    className="mt-0.5 h-5 w-5 accent-[#0d4fa3]"
+                  />
+                  <span>
+                    <span className="block text-sm font-bold">GCash</span>
+                    <span className="block text-xs text-muted">
+                      Pay now and upload your payment proof.
+                    </span>
+                  </span>
+                </label>
+                <label
+                  className={`flex cursor-pointer items-start gap-3 rounded-2xl border px-4 py-3 shadow-card ${
+                    paymentMethod === "cash"
+                      ? "border-brand bg-[#e3edf9]"
+                      : "border-line bg-paper"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="payment-method"
+                    value="cash"
+                    checked={paymentMethod === "cash"}
+                    onChange={() => setPaymentMethod("cash")}
+                    className="mt-0.5 h-5 w-5 accent-[#0d4fa3]"
+                  />
+                  <span>
+                    <span className="block text-sm font-bold">Cash</span>
+                    <span className="block text-xs text-muted">
+                      Pay at the booth when you pick up your order.
+                    </span>
+                  </span>
+                </label>
+              </div>
+            </section>
           </div>
 
           <div className="mt-5 md:mt-0">
@@ -227,7 +283,11 @@ export default function CheckoutPage() {
               disabled={submitting}
               className="mt-5 mb-6 w-full rounded-full bg-accent py-3.5 text-lg font-bold text-ink shadow-card hover:bg-accent-deep disabled:opacity-50"
             >
-              {submitting ? "Creating order…" : "Continue to GCash payment"}
+              {submitting
+                ? "Creating order…"
+                : paymentMethod === "cash"
+                  ? "Place cash pre-order"
+                  : "Continue to GCash payment"}
             </button>
           </div>
         </div>

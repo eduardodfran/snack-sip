@@ -434,6 +434,7 @@ export type OrderLinesInput = { productId: string; qty: number }[];
 
 export async function createPreOrder(input: {
   lines: OrderLinesInput;
+  method: PaymentMethod;
   pickupSlotId: string | null;
   pickupLabel: string | null;
 }): Promise<{ id: string; orderNumber: string }> {
@@ -444,6 +445,7 @@ export async function createPreOrder(input: {
   }
   const { data, error } = await db().rpc("create_pre_order", {
     p_lines: input.lines,
+    p_method: input.method,
     p_pickup_slot_id: input.pickupSlotId,
     p_pickup_label: input.pickupLabel,
   });

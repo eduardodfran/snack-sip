@@ -88,6 +88,33 @@ export default function PaymentPage() {
     );
   }
 
+  if (order.paymentMethod === "cash") {
+    return (
+      <div className="mx-auto max-w-xl px-4 pt-8">
+        <div className="rounded-2xl bg-brand p-6 text-white shadow-card">
+          <p className="text-sm font-bold tracking-[0.15em] text-accent">
+            ORDER {order.orderNumber}
+          </p>
+          <h1 className="font-display mt-1 text-3xl leading-tight">
+            Cash payment selected
+          </h1>
+          <p className="mt-2 text-sm font-bold">
+            Pay {peso(order.total)} at the booth when you pick up your order.
+          </p>
+          <p className="mt-3 text-sm text-white/80">
+            Your pre-order is confirmed. Show your Order QR when you arrive.
+          </p>
+        </div>
+        <Link
+          href={`/orders/${order.id}`}
+          className="mt-5 block rounded-full border border-line bg-paper py-3 text-center font-bold shadow-card hover:border-brand"
+        >
+          View order
+        </Link>
+      </div>
+    );
+  }
+
   if (submitted) {
     return (
       <div className="mx-auto max-w-xl px-4 pt-8">

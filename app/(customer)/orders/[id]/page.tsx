@@ -78,7 +78,9 @@ export default function OrderDetailPage() {
         <OrderChip status={order.status} />
       </div>
 
-      {order.status === "pending" && order.paymentStatus === "pending_payment" && (
+      {order.status === "pending" &&
+        order.paymentStatus === "pending_payment" &&
+        order.paymentMethod === "gcash" && (
         <Link
           href={`/payment/${order.id}`}
           className="mt-4 block rounded-full bg-accent py-3 text-center font-bold text-ink shadow-card hover:bg-accent-deep"

@@ -48,7 +48,7 @@ set search_path = public
 as $$
 begin
   if new.status = 'confirmed'
-     and old.status <> 'confirmed'
+     and (tg_op = 'INSERT' or old.status <> 'confirmed')
      and new.type = 'pre_order'
      and new.queue_number is null
   then
@@ -60,7 +60,7 @@ $$;
 
 drop trigger if exists assign_queue_on_confirm on public.orders;
 create trigger assign_queue_on_confirm
-  before update of status on public.orders
+  before insert or update of status on public.orders
   for each row execute function public.assign_queue_on_confirm();
 
 -- ============================================================ orders: guard (security)
@@ -136,7 +136,7 @@ declare
   line record;
 begin
   if new.status = 'confirmed'
-     and old.status <> 'confirmed'
+     and (tg_op = 'INSERT' or old.status <> 'confirmed')
      and new.type = 'pre_order'
   then
     for line in
@@ -162,7 +162,7 @@ $$;
 
 drop trigger if exists handle_preorder_confirmed on public.orders;
 create trigger handle_preorder_confirmed
-  after update of status on public.orders
+  after insert or update of status on public.orders
   for each row execute function public.handle_preorder_confirmed();
 
 -- ============================================================ stock for walk-in lines
@@ -246,8 +246,11 @@ grant execute on function public.redeem_reward() to authenticated;
 -- ============================================================ create_pre_order RPC
 -- Server-side prices, stock checks, claim code and order number.
 -- Clients no longer INSERT into orders/order_lines directly.
+drop function if exists public.create_pre_order(jsonb, text, text);
+
 create or replace function public.create_pre_order(
   p_lines jsonb,
+  p_method text default 'gcash',
   p_pickup_slot_id text default null,
   p_pickup_label text default null
 )
@@ -269,6 +272,10 @@ declare
 begin
   if v_uid is null then
     raise exception 'Log in to place a pre-order.';
+  end if;
+
+  if p_method not in ('cash', 'gcash') then
+    raise exception 'Invalid payment method.';
   end if;
 
   if p_lines is null or jsonb_array_length(p_lines) = 0 then
@@ -319,7 +326,9 @@ begin
     pickup_slot_id, pickup_label, claim_code
   ) values (
     'pre_order', v_uid, v_name, v_total,
-    'gcash', 'pending_payment', 'pending',
+    p_method,
+    case when p_method = 'cash' then 'verified' else 'pending_payment' end,
+    'pending',
     p_pickup_slot_id, p_pickup_label, v_claim
   )
   returning id, order_number into v_order_id, v_order_number;
@@ -328,6 +337,12 @@ begin
     select v_order_id, p.id, p.name, (l->>'qty')::integer, p.price
     from jsonb_array_elements(p_lines) l
     join public.products p on p.id = l->>'productId';
+
+  if p_method = 'cash' then
+    update public.orders
+      set status = 'confirmed'
+      where id = v_order_id;
+  end if;
 
   return jsonb_build_object(
     'id', v_order_id,
@@ -338,8 +353,8 @@ begin
 end;
 $$;
 
-revoke execute on function public.create_pre_order(jsonb, text, text) from public, anon;
-grant execute on function public.create_pre_order(jsonb, text, text) to authenticated;
+revoke execute on function public.create_pre_order(jsonb, text, text, text) from public, anon;
+grant execute on function public.create_pre_order(jsonb, text, text, text) to authenticated;
 
 -- ============================================================ create_walk_in RPC
 -- POS order: server-side prices, stock consumed by the order_lines trigger,
