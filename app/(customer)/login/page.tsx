@@ -39,7 +39,7 @@ function LoginForm() {
       <div className="rounded-2xl border border-line bg-paper p-6 shadow-card">
         <h1 className="font-display text-3xl tracking-tight">Welcome back</h1>
         <p className="mt-1 text-sm text-muted">
-          Log in to track orders and keep your points.
+          Log in to track your orders.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">

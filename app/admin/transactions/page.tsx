@@ -63,7 +63,6 @@ export default function TransactionsPage() {
                 {order.type === "pre_order" ? "Pre-order" : "Walk-in"} ·{" "}
                 {order.paymentMethod}
                 {order.customerName ? ` · ${order.customerName}` : ""}
-                {order.pointsAwarded > 0 ? ` · +${order.pointsAwarded} pts` : ""}
               </p>
               <div className="mt-2 flex flex-wrap gap-2">
                 <PaymentChip status={order.paymentStatus} />

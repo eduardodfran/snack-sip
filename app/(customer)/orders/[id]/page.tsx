@@ -225,11 +225,6 @@ export default function OrderDetailPage() {
             This order was cancelled.
           </p>
         )}
-        {order.status === "completed" && order.pointsAwarded > 0 && (
-          <p className="rounded-xl bg-[#e3f2e9] px-3 py-2 text-sm font-bold text-fresh">
-            +{order.pointsAwarded} loyalty points credited
-          </p>
-        )}
       </section>
     </div>
   );

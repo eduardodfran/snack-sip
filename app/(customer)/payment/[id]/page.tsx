@@ -132,6 +132,9 @@ export default function PaymentPage() {
           </p>
           <p className="text-xl font-extrabold">{GCASH.name}</p>
           <p className="text-lg font-bold">{GCASH.number}</p>
+          <p className="mt-2 text-xs font-bold tracking-wide text-white/80">
+            LOYALTY IS NOT APPLICABLE IN THIS EVENT
+          </p>
         </div>
         <div className="flex items-baseline px-4 py-4">
           <span className="font-bold">Amount due</span>

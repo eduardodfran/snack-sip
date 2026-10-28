@@ -17,7 +17,6 @@ const NAV = [
   { href: "/", label: "Home" },
   { href: "/menu", label: "Menu" },
   { href: "/orders", label: "Orders" },
-  { href: "/loyalty", label: "Loyalty" },
 ] as const;
 
 function Header({ profile }: { profile: Profile | null }) {

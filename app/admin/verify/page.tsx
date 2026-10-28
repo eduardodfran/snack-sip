@@ -118,7 +118,7 @@ function VerifyScan() {
       ) : null}
       {released && (
         <p className="mt-4 rounded-xl bg-[#e3f2e9] px-3 py-3 text-center font-bold text-fresh">
-          Released — points credited if there&apos;s an account.
+          Released — order completed.
         </p>
       )}
       {error && (

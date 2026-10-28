@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useAuth } from "@/components/auth-provider";
-import { QrImage } from "@/components/qr-image";
 
 export default function ProfilePage() {
   const { profile } = useAuth();
@@ -42,29 +41,7 @@ export default function ProfilePage() {
             </dt>
             <dd className="text-sm font-semibold">{profile.email}</dd>
           </div>
-          <div>
-            <dt className="text-xs font-bold tracking-[0.15em] text-muted">
-              POINTS
-            </dt>
-            <dd className="text-lg font-extrabold text-brand">
-              {profile.points}
-            </dd>
-          </div>
         </dl>
-      </section>
-
-      <section className="mt-5 rounded-2xl bg-brand p-5 text-white shadow-card">
-        <h2 className="font-display text-lg text-accent">Account QR</h2>
-        <p className="mt-1 text-sm text-white/80">
-          Same QR as in Loyalty — show this at the booth for walk-in points.
-        </p>
-        <div className="mt-3 flex justify-center">
-          <QrImage
-            value={`snack-sip:account:${profile.id}`}
-            alt="Your account QR code"
-            size={160}
-          />
-        </div>
       </section>
 
       <Link

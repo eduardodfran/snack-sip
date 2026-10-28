@@ -3,16 +3,14 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ProductArt } from "@/components/product-art";
-import { Scanner } from "@/components/scanner";
 import { Stub } from "@/components/stub";
 import {
   createWalkIn,
   fetchProducts,
-  fetchProfile,
   findOrder,
 } from "@/lib/data/api";
 import { peso } from "@/lib/format";
-import type { Order, Product, Profile } from "@/lib/types";
+import type { Order, Product } from "@/lib/types";
 
 type Step = "order" | "payment" | "done";
 
@@ -21,8 +19,6 @@ export default function PosPage() {
   const [qty, setQty] = useState<Record<string, number>>({});
   const [step, setStep] = useState<Step>("order");
   const [method, setMethod] = useState<"cash" | "gcash">("cash");
-  const [account, setAccount] = useState<Profile | null>(null);
-  const [scanOpen, setScanOpen] = useState(false);
   const [error, setError] = useState("");
   const [order, setOrder] = useState<Order | null>(null);
   const [confirming, setConfirming] = useState(false);
@@ -61,28 +57,6 @@ export default function PosPage() {
     });
   }
 
-  async function handleScan(text: string) {
-    setScanOpen(false);
-    const match = text.match(/snack-sip:account:([A-Za-z0-9-]+)/);
-    if (!match) {
-      setError("That QR is not an Account QR.");
-      return;
-    }
-    try {
-      const profile = await fetchProfile(match[1]);
-      if (!profile) {
-        setError("Account not found.");
-        return;
-      }
-      setAccount(profile);
-      setError("");
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Could not look up that account.",
-      );
-    }
-  }
-
   async function confirmOrder() {
     setError("");
     if (confirming) return;
@@ -94,13 +68,12 @@ export default function PosPage() {
           qty: line.qty,
         })),
         method,
-        customerId: account?.id ?? null,
+        customerId: null,
       });
       const created = await findOrder(id);
       if (!created) throw new Error("Could not load the new order.");
       setOrder(created);
       setQty({});
-      setAccount(null);
       setStep("done");
       setProducts(await fetchProducts());
     } catch (err) {
@@ -209,35 +182,6 @@ export default function PosPage() {
           </div>
         </fieldset>
 
-        <section className="mt-5 rounded-2xl border border-line bg-paper p-4 shadow-card">
-          <div className="flex items-center justify-between gap-2">
-            <div>
-              <h2 className="font-display text-lg">Loyalty account</h2>
-              <p className="text-sm text-muted">
-                {account
-                  ? `Linked: ${account.name}`
-                  : "Optional — scan Account QR."}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setScanOpen(true)}
-              className="rounded-full bg-brand px-4 py-2 text-sm font-bold text-white hover:bg-brand-deep"
-            >
-              Scan
-            </button>
-          </div>
-          {account && (
-            <button
-              type="button"
-              onClick={() => setAccount(null)}
-              className="mt-3 text-sm font-bold text-cocoa underline underline-offset-4"
-            >
-              Remove
-            </button>
-          )}
-        </section>
-
         {error && (
           <p
             role="alert"
@@ -260,13 +204,6 @@ export default function PosPage() {
               : "GCash verified — confirm"}
         </button>
 
-        {scanOpen && (
-          <Scanner
-            title="Scan Account QR"
-            onResult={handleScan}
-            onClose={() => setScanOpen(false)}
-          />
-        )}
       </div>
     );
   }

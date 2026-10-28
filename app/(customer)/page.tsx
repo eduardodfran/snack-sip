@@ -10,7 +10,6 @@ import {
   ReceiptIcon,
   Sparkles,
   Squiggle,
-  StarBadgeIcon,
   Swirl,
   TaglineMarquee,
 } from "@/components/hero-decor";
@@ -23,11 +22,6 @@ const FEATURES = [
   { title: "View Menu", body: "See what's cooking today.", Icon: MenuIcon },
   { title: "Track Orders", body: "Follow your order live.", Icon: ReceiptIcon },
   {
-    title: "Loyalty Points",
-    body: "Earn points every order.",
-    Icon: StarBadgeIcon,
-  },
-  {
     title: "Pickup Schedule",
     body: "Claim on your time.",
     Icon: CalendarIcon,
@@ -37,7 +31,6 @@ const FEATURES = [
 const WHY = [
   ["Fast pickup", "Already paid — just show your QR."],
   ["Reserved order", "Won't sell out — yours is held."],
-  ["Bonus points", "+2 loyalty points per completed pre-order."],
 ] as const;
 
 const STEPS = [
@@ -289,22 +282,6 @@ export default function HomePage() {
           </p>
         </section>
 
-        <section className="mt-4 rounded-2xl border border-line bg-paper p-5 shadow-card md:mt-0">
-          <h2 className="font-display text-xl">Loyalty points</h2>
-          <p className="mt-1.5 text-sm font-bold text-brand">
-            ₱25 = 1 point · Pre-order = +2 bonus · 10 points = free snack
-          </p>
-          <p className="mt-2 text-sm text-muted">
-            Points land after your order is completed. Scan your Account QR
-            at the booth so they don&apos;t get lost.
-          </p>
-          <Link
-            href="/loyalty"
-            className="mt-4 inline-block rounded-full bg-accent px-5 py-2.5 text-sm font-bold text-ink hover:bg-accent-deep"
-          >
-            See my points
-          </Link>
-        </section>
       </div>
     </div>
   );

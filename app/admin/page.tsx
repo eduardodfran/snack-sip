@@ -61,12 +61,6 @@ export default function AdminDashboard() {
     { label: "To verify", value: String(forVerification.length) },
     { label: "In the queue", value: String(preparing.length) },
     { label: "Ready", value: String(ready.length) },
-    {
-      label: "Loyalty members",
-      value: String(
-        new Set(orders.map((o) => o.customerId).filter(Boolean)).size,
-      ),
-    },
   ];
 
   return (

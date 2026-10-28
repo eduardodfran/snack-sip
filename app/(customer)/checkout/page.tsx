@@ -103,7 +103,7 @@ export default function CheckoutPage() {
         <div className="mt-6 rounded-2xl border border-line bg-paper p-5 shadow-card">
           <p className="font-bold">You need an account to pre-order.</p>
           <p className="mt-1 text-sm text-muted">
-            Your Order QR and loyalty points are linked here too.
+            Your Order QR and order tracking are linked here too.
           </p>
           <div className="mt-5 flex flex-col gap-3">
             <Link

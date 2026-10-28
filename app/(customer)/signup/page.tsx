@@ -70,7 +70,7 @@ function SignupForm() {
       <div className="rounded-2xl border border-line bg-paper p-6 shadow-card">
         <h1 className="font-display text-3xl tracking-tight">Create account</h1>
         <p className="mt-1 text-sm text-muted">
-          For Order QR, tracking, and loyalty points.
+          For Order QR and order tracking.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">

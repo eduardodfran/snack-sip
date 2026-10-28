@@ -14,7 +14,6 @@ const TABS: {
   { href: "/menu", label: "Menu", icon: MenuIcon },
   { href: "/cart", label: "Cart", icon: CartIcon, showCount: true },
   { href: "/orders", label: "Orders", icon: OrdersIcon },
-  { href: "/loyalty", label: "Loyalty", icon: StarIcon },
 ];
 
 export function BottomNav() {
@@ -121,19 +120,6 @@ function OrdersIcon({ className }: IconProps) {
         strokeWidth="2"
       />
       <path d="M9 10 H15 M9 14 H15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function StarIcon({ className }: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden>
-      <path
-        d="M12 3.5 L14.6 9 L20.5 9.7 L16.2 13.9 L17.3 19.8 L12 17 L6.7 19.8 L7.8 13.9 L3.5 9.7 L9.4 9 Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
     </svg>
   );
 }

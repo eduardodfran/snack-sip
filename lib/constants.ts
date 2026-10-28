@@ -1,13 +1,6 @@
-export const LOYALTY = {
-  pesosPerPoint: 25,
-  preOrderBonus: 2,
-  rewardAt: 10,
-  rewardLabel: "Free snack",
-} as const;
-
 export const GCASH = {
-  name: "Snack & Sip",
-  number: "09XX XXX XXXX",
+  name: "Rai Hannah Alab",
+  number: "09851567833",
 } as const;
 
 export const FAIR = {
