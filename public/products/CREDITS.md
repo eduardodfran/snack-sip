@@ -14,5 +14,5 @@ photo upload) whenever you have them.
 | `small-siopao.jpg` | [Steamed Siopao with sauce.jpg](https://commons.wikimedia.org/wiki/File:Steamed_Siopao_with_sauce.jpg) | CC BY-SA 4.0 |
 | `choco-mini-siopao.jpg` | [6379Photos taken in Poblacion, Baliuag, Bulacan 45.jpg](https://commons.wikimedia.org/wiki/File:6379Photos_taken_in_Poblacion,_Baliuag,_Bulacan_45.jpg) | CC0 |
 | `ube-mini-siopao.jpg` | [Ube Pao (Manila Chinatown).jpg](https://commons.wikimedia.org/wiki/File:Ube_Pao_(Manila_Chinatown).jpg) | CC BY-SA 4.0 |
-| `coke-mini.jpg` | [Coca-Cola 200mL (October 24, 2024).jpg](https://commons.wikimedia.org/wiki/File:Coca-Cola_200mL_(October_24,_2024).jpg) | CC BY-SA 4.0 |
-| `wilkins-330ml.jpg` | [Cilíndrica botella de agua con tapa negra.jpg](https://commons.wikimedia.org/wiki/File:Cil%C3%ADndrica_botella_de_agua_con_tapa_negra.jpg) | CC0 |
+| `coke-mini.png` | User-provided photo | User-owned |
+| `water.png` | User-provided photo | User-owned |

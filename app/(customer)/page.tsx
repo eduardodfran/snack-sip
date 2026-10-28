@@ -88,7 +88,7 @@ export default function HomePage() {
         <div className="relative grid items-center gap-8 md:grid-cols-2 md:gap-10">
           <div>
             <p className="text-xs font-bold tracking-[0.2em] text-brand">
-              TECHNO FAIR 2026 · THURSDAY, OCT 29 · 1:00 PM
+              THURSDAY, OCT 29 · 1:00 PM
             </p>
             <h1 className="font-display mt-3 text-4xl leading-[1.05] tracking-tight text-ink sm:text-5xl xl:text-6xl">
               Pre-order.

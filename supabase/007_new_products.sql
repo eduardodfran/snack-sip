@@ -24,8 +24,8 @@ insert into public.products (id, name, description, price, stock, active, art, i
   ('small-siopao',       'Small Siopao',           'Small steamed bun with savory filling.',              15,  60, true, 'siopao',       '/products/small-siopao.jpg'),
   ('choco-mini-siopao',  'Choco Mini Siopao',      'Mini steamed bun with sweet chocolate filling.',      18,  40, true, 'siopao-choco', '/products/choco-mini-siopao.jpg'),
   ('ube-mini-siopao',    'Ube Mini Siopao',        'Mini steamed bun with sweet ube filling.',            18,  40, true, 'siopao-ube',   '/products/ube-mini-siopao.jpg'),
-  ('coke-mini',          'Coke Mini',              'Chilled Coca-Cola mini.',                             16,  80, true, 'coke',         '/products/coke-mini.jpg'),
-  ('wilkins-330ml',      'Wilkins 330ml',          'Purified drinking water, 330 ml.',                    15,  80, true, 'water',        '/products/wilkins-330ml.jpg')
+  ('coke-mini',          'Coke Mini',              'Chilled Coca-Cola mini.',                             16,  80, true, 'coke',         '/products/coke-mini.png'),
+  ('wilkins-330ml',      'Wilkins 330ml',          'Purified drinking water, 330 ml.',                    15,  80, true, 'water',        '/products/water.png')
 on conflict (id) do update set
   name = excluded.name,
   description = excluded.description,

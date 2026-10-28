@@ -33,7 +33,7 @@ export default function MenuPage() {
   return (
     <div className="px-4 pt-6 pb-4">
       <p className="text-xs font-bold tracking-[0.2em] text-brand">
-        TECHNO FAIR · THURSDAY, OCT 29 · 1:00 PM
+        THURSDAY, OCT 29 · 1:00 PM
       </p>
       <h1 className="font-display mt-1 text-3xl tracking-tight md:text-4xl">
         Menu
@@ -109,6 +109,10 @@ export default function MenuPage() {
         })}
       </ul>
 
+      <p className="pb-2 text-center text-xs text-muted/80">
+        Note: product photos are for reference only and may not match the exact
+        items served.
+      </p>
       <p className="py-5 text-center text-sm text-muted">
         Walk-in? You can also just drop by the booth — no website needed.
       </p>

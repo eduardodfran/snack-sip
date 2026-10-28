@@ -11,7 +11,7 @@ export const GCASH = {
 } as const;
 
 export const FAIR = {
-  name: "Techno Fair",
+  name: "Snack & Sip",
   days: ["Day 1", "Day 2"] as const,
 } as const;
 

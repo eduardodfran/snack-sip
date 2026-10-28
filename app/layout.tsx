@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     template: "%s · Snack & Sip",
   },
   description:
-    "Pre-order your Techno Fair snacks — siomai, siomai rice, and siopao (big, mini, ube, chocolate). Pay with GCash, claim with QR.",
+    "Pre-order your snacks — siomai, siomai rice, and siopao (big, mini, ube, chocolate). Pay with GCash, claim with QR.",
 };
 
 export const viewport: Viewport = {
