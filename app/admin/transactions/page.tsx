@@ -167,6 +167,14 @@ export default function TransactionsPage() {
                 {peso(selectedOrder.total)}
               </span>
             </div>
+
+            <button
+              type="button"
+              onClick={() => setSelectedOrder(null)}
+              className="mt-5 w-full rounded-full border border-cocoa/40 bg-[#f7e9dc] py-3 text-sm font-bold text-cocoa shadow-card hover:bg-[#f0dcc8]"
+            >
+              Cancel
+            </button>
           </div>
         </div>
       )}
