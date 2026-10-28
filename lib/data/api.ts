@@ -392,6 +392,7 @@ export async function fetchMyOrders(customerId: string): Promise<Order[]> {
     .from("orders")
     .select(ORDER_SELECT)
     .eq("customer_id", customerId)
+    .neq("payment_status", "pending_payment")
     .order("created_at", { ascending: false })
     .order("id", { referencedTable: "order_lines" });
   if (error) throw new Error(error.message);
