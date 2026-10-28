@@ -33,7 +33,7 @@ export default function MenuPage() {
   return (
     <div className="px-4 pt-6 pb-4">
       <p className="text-xs font-bold tracking-[0.2em] text-brand">
-        TECHNO FAIR · OCTOBER 20
+        TECHNO FAIR · THURSDAY, OCT 29 · 1:00 PM
       </p>
       <h1 className="font-display mt-1 text-3xl tracking-tight md:text-4xl">
         Menu
