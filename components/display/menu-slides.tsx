@@ -32,6 +32,15 @@ function isSoldOut(product: Product): boolean {
   return product.stock <= 0;
 }
 
+/** Drinks get their own column on the choices slide. */
+function isDrink(product: Product): boolean {
+  return (
+    product.art === "palamig" ||
+    product.art === "coke" ||
+    product.art === "water"
+  );
+}
+
 export function buildSlides(
   products: Product[],
   settings: DisplaySettings,
@@ -235,11 +244,11 @@ function ChoicesSlide({ products }: { products: Product[] }) {
   const groups = [
     {
       label: "Snacks",
-      items: products.filter((p) => p.art !== "palamig").slice(0, 9),
+      items: products.filter((p) => !isDrink(p)).slice(0, 9),
     },
     {
       label: "Drinks",
-      items: products.filter((p) => p.art === "palamig").slice(0, 4),
+      items: products.filter(isDrink).slice(0, 4),
     },
   ].filter((group) => group.items.length > 0);
   const twoGroups = groups.length > 1;
@@ -355,7 +364,7 @@ function GiftIcon({ className = "" }: { className?: string }) {
 }
 
 function EarnSlide({ products }: { products: Product[] }) {
-  const drink = products.find((p) => p.art === "palamig") ?? products[0] ?? null;
+  const drink = products.find(isDrink) ?? products[0] ?? null;
   const steps = [
     { icon: <ReceiptIcon className="h-7 w-7 lg:h-9 lg:w-9" />, label: "Order" },
     { icon: <StarBadgeIcon className="h-7 w-7 lg:h-9 lg:w-9" />, label: "Earn Points" },

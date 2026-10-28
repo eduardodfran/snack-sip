@@ -141,6 +141,43 @@ export function FoodArt({ art, className }: { art: ArtKey } & Props) {
           />
         </Frame>
       );
+    case "coke":
+      return (
+        <Frame className={className}>
+          <ellipse cx="60" cy="100" rx="34" ry="8" fill="#e8e2d4" stroke={stroke} strokeWidth="4" />
+          <rect x="36" y="20" width="48" height="76" rx="8" fill="#c8102e" stroke={stroke} strokeWidth="4" />
+          <path d="M36 38 H84" stroke="#fffdf6" strokeWidth="10" />
+          <text
+            x="60"
+            y="72"
+            textAnchor="middle"
+            fontSize="17"
+            fontWeight="700"
+            fill="#fffdf6"
+            fontFamily="Georgia, serif"
+          >
+            Cola
+          </text>
+          <ellipse cx="60" cy="20" rx="24" ry="6" fill="#cfd4d8" stroke={stroke} strokeWidth="4" />
+          <path d="M52 16 h16" stroke={stroke} strokeWidth="3" strokeLinecap="round" />
+        </Frame>
+      );
+    case "water":
+      return (
+        <Frame className={className}>
+          <ellipse cx="60" cy="102" rx="28" ry="7" fill="#e8e2d4" stroke={stroke} strokeWidth="4" />
+          <path
+            d="M44 34 C44 27 76 27 76 34 L80 96 C80 101 40 101 40 96 Z"
+            fill="#dff1fb"
+            stroke={stroke}
+            strokeWidth="4"
+          />
+          <rect x="50" y="16" width="20" height="14" rx="3" fill="#3b7dd8" stroke={stroke} strokeWidth="3" />
+          <rect x="44" y="56" width="32" height="24" rx="4" fill="#3b7dd8" stroke={stroke} strokeWidth="3" />
+          <path d="M48 68 h24" stroke="#fffdf6" strokeWidth="3" strokeLinecap="round" />
+          <path d="M48 40 L52 92" stroke="#fffdf6" strokeWidth="3" strokeLinecap="round" opacity="0.8" />
+        </Frame>
+      );
     case "waffle":
       return (
         <Frame className={className}>

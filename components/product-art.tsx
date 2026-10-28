@@ -28,7 +28,9 @@ export function ProductArt({
         alt=""
         loading="lazy"
         onError={() => setFailed(true)}
-        className={`${className ?? ""} object-cover`}
+        className={`${className ?? ""} ${
+          product.fit === "contain" ? "object-contain" : "object-cover"
+        }`}
       />
     );
   }

@@ -109,6 +109,9 @@ function mapProduct(row: {
   art: Product["art"];
   image_path?: string | null;
 }): Product {
+  // Bundled photos (public/products) are the default; an admin upload in
+  // Admin -> Products always wins, and FoodArt is the last resort.
+  const bundled = SEED_PRODUCTS.find((p) => p.id === row.id);
   return {
     id: row.id,
     name: row.name,
@@ -117,7 +120,8 @@ function mapProduct(row: {
     stock: row.stock,
     active: row.active,
     art: row.art,
-    imagePath: row.image_path ?? null,
+    imagePath: row.image_path ?? bundled?.imagePath ?? null,
+    fit: bundled?.fit ?? "cover",
   };
 }
 
@@ -333,6 +337,9 @@ export async function removeProductImage(path: string): Promise<void> {
 }
 
 export function productImageUrl(path: string): string | null {
+  // Bundled files (public/products/...) and absolute URLs are used as-is;
+  // anything else is a path inside the product-images storage bucket.
+  if (path.startsWith("/") || path.startsWith("http")) return path;
   if (!isSupabaseConfigured()) return null;
   const { data } = getSupabase()
     .storage.from("product-images")
@@ -348,7 +355,15 @@ export async function fetchPickupSlots(): Promise<PickupSlot[]> {
     .order("id");
   if (error) throw new Error(error.message);
   if (!data || data.length === 0) return PICKUP_SLOTS;
-  return data;
+
+  // The fair date is controlled in code (PICKUP_SLOTS). Keep the DB ids so
+  // existing orders still resolve, but always show the current labels — a
+  // stale `pickup_slots` row must not put the old date on checkout.
+  const labels = new Map(PICKUP_SLOTS.map((slot) => [slot.id, slot.label]));
+  return data.map((slot) => ({
+    id: slot.id,
+    label: labels.get(slot.id) ?? slot.label,
+  }));
 }
 
 // ---------------------------------------------------------------- orders

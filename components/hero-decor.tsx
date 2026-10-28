@@ -66,10 +66,14 @@ export function Swirl({ className = "" }: { className?: string }) {
 }
 
 export function StarburstShape({ className = "" }: { className?: string }) {
+  // Rounded coordinates: server and browser format floats differently, which
+  // otherwise shows up as a hydration mismatch.
   const points = Array.from({ length: 24 }, (_, i) => {
     const angle = (Math.PI * 2 * i) / 24;
     const r = i % 2 === 0 ? 50 : 40;
-    return `${50 + r * Math.cos(angle)},${50 + r * Math.sin(angle)}`;
+    const x = (50 + r * Math.cos(angle)).toFixed(3);
+    const y = (50 + r * Math.sin(angle)).toFixed(3);
+    return `${x},${y}`;
   }).join(" ");
   return (
     <svg viewBox="0 0 100 100" aria-hidden className={className}>

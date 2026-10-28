@@ -26,6 +26,8 @@ export type Product = {
   art: ArtKey;
   /** Storage path of an uploaded photo in the product-images bucket; the FoodArt drawing is the fallback. */
   imagePath: string | null;
+  /** How the photo fills its box — "contain" keeps tall bottles/cans fully visible. */
+  fit?: "cover" | "contain";
 };
 
 export type ArtKey =
@@ -37,7 +39,9 @@ export type ArtKey =
   | "rice"
   | "egg"
   | "siopao-ube"
-  | "siopao-choco";
+  | "siopao-choco"
+  | "coke"
+  | "water";
 
 export type CartItem = {
   productId: string;

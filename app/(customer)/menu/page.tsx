@@ -56,7 +56,7 @@ export default function MenuPage() {
               <div className="relative overflow-hidden rounded-xl bg-cream">
                 <ProductArt
                   product={product}
-                  className="h-36 w-full object-cover"
+                  className="aspect-[4/3] w-full"
                 />
                 {soldOut && (
                   <span className="absolute top-2 left-2 rounded-full bg-stone-200 px-3 py-1 text-[11px] font-bold text-stone-500">

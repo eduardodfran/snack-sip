@@ -12,6 +12,8 @@ const ART_OPTIONS: { key: ArtKey; label: string }[] = [
   { key: "siopao-ube", label: "Siopao (Ube)" },
   { key: "siopao-choco", label: "Siopao (Chocolate)" },
   { key: "egg", label: "Egg" },
+  { key: "coke", label: "Cola can" },
+  { key: "water", label: "Water bottle" },
   { key: "saucer", label: "Saucer (old)" },
   { key: "waffle", label: "Waffle (old)" },
   { key: "palamig", label: "Palamig (old)" },

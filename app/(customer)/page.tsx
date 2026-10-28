@@ -125,17 +125,50 @@ export default function HomePage() {
           </div>
 
           <div className="relative">
-            {/* HERO.png is a transparent cutout: no frame, food floats on cream. */}
-            <div>
-              <Image
-                src="/HERO.png"
-                alt="Snack &amp; Sip snacks illustration"
-                width={1365}
-                height={2048}
-                priority
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="aspect-square w-full object-cover object-[50%_45%] [filter:drop-shadow(0_20px_28px_rgba(98,58,39,0.3))] md:aspect-[5/4] md:object-[50%_51%]"
-              />
+            {/* Photo collage of the current menu — keeps the hero in sync
+                with whatever is actually being sold. */}
+            <div className="relative mx-auto aspect-square w-full max-w-md md:max-w-none md:aspect-[5/4]">
+              {[
+                {
+                  src: "/products/siomai-beef.jpg",
+                  alt: "Steamed beef siomai",
+                  className:
+                    "left-0 top-2 w-[54%] -rotate-6 sm:w-[48%]",
+                },
+                {
+                  src: "/products/big-chicken-siopao.jpg",
+                  alt: "Big chicken siopao",
+                  className:
+                    "right-0 top-0 w-[46%] rotate-5 sm:w-[42%]",
+                },
+                {
+                  src: "/products/beef-siomai-rice.jpg",
+                  alt: "Beef siomai rice meal",
+                  className:
+                    "bottom-0 left-[10%] w-[48%] rotate-3 sm:left-[16%] sm:w-[42%]",
+                },
+                {
+                  src: "/products/choco-mini-siopao.jpg",
+                  alt: "Choco mini siopao",
+                  className:
+                    "bottom-4 right-0 w-[42%] -rotate-4 sm:w-[38%]",
+                },
+              ].map((photo) => (
+                <div
+                  key={photo.src}
+                  className={`absolute overflow-hidden rounded-3xl border-4 border-paper bg-paper shadow-card ${photo.className}`}
+                >
+                  <Image
+                    src={photo.src}
+                    alt={photo.alt}
+                    width={640}
+                    height={640}
+                    priority
+                    sizes="(max-width: 768px) 50vw, 30vw"
+                    className="aspect-square w-full object-cover"
+                  />
+                </div>
+              ))}
             </div>
             <GoodFoodBadge className="absolute -bottom-10 -left-2 md:-left-6" />
           </div>
