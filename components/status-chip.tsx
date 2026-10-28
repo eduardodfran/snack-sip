@@ -27,11 +27,10 @@ const ORDER_STYLES: Record<OrderStatus, { label: string; className: string }> = 
   },
 };
 
-const PAYMENT_STYLES: Record<PaymentStatus, { label: string; className: string }> = {
-  pending_payment: {
-    label: "Not paid yet",
-    className: "bg-stone-200 text-stone-600",
-  },
+const PAYMENT_STYLES: Record<
+  Exclude<PaymentStatus, "pending_payment">,
+  { label: string; className: string }
+> = {
   for_verification: {
     label: "For verification",
     className: "bg-[#e3edf9] text-brand",
@@ -58,6 +57,7 @@ export function OrderChip({ status }: { status: OrderStatus }) {
 }
 
 export function PaymentChip({ status }: { status: PaymentStatus }) {
+  if (status === "pending_payment") return null;
   const { label, className } = PAYMENT_STYLES[status];
   return (
     <span

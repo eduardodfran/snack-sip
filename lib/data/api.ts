@@ -377,6 +377,9 @@ export async function fetchOrders(): Promise<Order[]> {
   const { data, error } = await db()
     .from("orders")
     .select(ORDER_SELECT)
+    // An order is not an admin transaction until GCash proof is submitted
+    // or a cash order is confirmed.
+    .neq("payment_status", "pending_payment")
     .order("created_at", { ascending: false })
     .order("id", { referencedTable: "order_lines" });
   if (error) throw new Error(error.message);
