@@ -10,6 +10,7 @@ export default function TransactionsPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -168,21 +169,52 @@ export default function TransactionsPage() {
               </span>
             </div>
 
-            <button
-              type="button"
-              onClick={async () => {
-                try {
-                  await deleteOrder(selectedOrder.id);
-                  setOrders((current) => current.filter((order) => order.id !== selectedOrder.id));
-                  setSelectedOrder(null);
-                } catch (err) {
-                  alert(err instanceof Error ? err.message : "Could not cancel this transaction.");
-                }
-              }}
-              className="mt-5 w-full rounded-full border border-cocoa/40 bg-[#f7e9dc] py-3 text-sm font-bold text-cocoa shadow-card hover:bg-[#f0dcc8]"
-            >
-              Cancel
-            </button>
+            {!confirmDelete ? (
+              <button
+                type="button"
+                onClick={() => setConfirmDelete(true)}
+                className="mt-5 w-full rounded-full border border-cocoa/40 bg-[#f7e9dc] py-3 text-sm font-bold text-cocoa shadow-card hover:bg-[#f0dcc8]"
+              >
+                Cancel order
+              </button>
+            ) : (
+              <div className="mt-5 rounded-2xl border border-cocoa/40 bg-[#f7e9dc] p-3">
+                <p className="text-sm font-bold text-cocoa">
+                  Delete this order record?
+                </p>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setConfirmDelete(false)}
+                    className="rounded-full border border-line bg-paper px-3 py-2 text-sm font-bold text-muted hover:border-brand hover:text-brand"
+                  >
+                    Keep it
+                  </button>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        await deleteOrder(selectedOrder.id);
+                        setOrders((current) =>
+                          current.filter((order) => order.id !== selectedOrder.id),
+                        );
+                        setSelectedOrder(null);
+                        setConfirmDelete(false);
+                      } catch (err) {
+                        alert(
+                          err instanceof Error
+                            ? err.message
+                            : "Could not cancel this transaction.",
+                        );
+                      }
+                    }}
+                    className="rounded-full bg-cocoa px-3 py-2 text-sm font-bold text-white hover:brightness-110"
+                  >
+                    Confirm delete
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
