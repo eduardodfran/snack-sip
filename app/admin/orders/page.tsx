@@ -23,6 +23,7 @@ function OrdersAdmin() {
   const [code, setCode] = useState("");
   const [message, setMessage] = useState("");
   const [scanning, setScanning] = useState(false);
+  const [selectedProof, setSelectedProof] = useState<Order | null>(null);
 
   async function refresh() {
     try {
@@ -176,12 +177,18 @@ function OrdersAdmin() {
                     </p>
                   )}
                   {order.proofUrl && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={order.proofUrl}
-                      alt={`Payment proof for ${order.orderNumber}`}
-                      className="mt-3 max-h-72 w-full rounded-xl border border-line object-contain"
-                    />
+                    <button
+                      type="button"
+                      onClick={() => setSelectedProof(order)}
+                      className="mt-3 block w-full overflow-hidden rounded-xl border border-line bg-paper text-left"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={order.proofUrl}
+                        alt={`Payment proof for ${order.orderNumber}`}
+                        className="max-h-72 w-full object-contain"
+                      />
+                    </button>
                   )}
                   <div className="mt-4 grid grid-cols-2 gap-3">
                     <button
@@ -204,6 +211,35 @@ function OrdersAdmin() {
             ))
           )}
         </section>
+      )}
+
+      {selectedProof && selectedProof.proofUrl && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 p-4">
+          <div className="w-full max-w-2xl rounded-3xl border border-line bg-paper p-3 shadow-card">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-bold tracking-[0.15em] text-muted uppercase">
+                  Payment proof
+                </p>
+                <p className="font-display text-xl text-brand">
+                  {selectedProof.orderNumber}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedProof(null)}
+                className="rounded-full border border-line bg-paper px-3 py-1.5 text-sm font-bold text-muted hover:border-brand hover:text-brand"
+              >
+                Close
+              </button>
+            </div>
+            <img
+              src={selectedProof.proofUrl}
+              alt={`Full payment proof for ${selectedProof.orderNumber}`}
+              className="max-h-[75vh] w-full rounded-2xl border border-line object-contain bg-cream"
+            />
+          </div>
+        </div>
       )}
 
       {tab === "queue" && (
@@ -281,13 +317,6 @@ function OrdersAdmin() {
                 <p className="mt-2 text-sm text-muted">
                   {order.lines.map((l) => `${l.qty}× ${l.name}`).join(", ")}
                 </p>
-                {order.customerName && (
-                  <div className="mt-2">
-                    <span className="inline-flex items-center rounded-full border border-brand/40 bg-brand px-3 py-1.5 text-xs font-extrabold tracking-wide text-white shadow-sm">
-                      Ordered by {order.customerName}
-                    </span>
-                  </div>
-                )}
                 {order.pickupLabel && order.type === "pre_order" && (
                   <p className="mt-1 text-xs text-muted">
                     {order.pickupLabel}
@@ -303,11 +332,17 @@ function OrdersAdmin() {
                     <p className="mb-1 text-[10px] font-bold tracking-[0.15em] text-muted uppercase">
                       GCash proof
                     </p>
-                    <img
-                      src={order.proofUrl}
-                      alt={`GCash proof for ${order.orderNumber}`}
-                      className="max-h-40 w-full rounded-xl border border-line object-contain bg-paper"
-                    />
+                    <button
+                      type="button"
+                      onClick={() => setSelectedProof(order)}
+                      className="w-full overflow-hidden rounded-xl border border-line bg-paper text-left"
+                    >
+                      <img
+                        src={order.proofUrl}
+                        alt={`GCash proof for ${order.orderNumber}`}
+                        className="max-h-40 w-full object-contain"
+                      />
+                    </button>
                   </div>
                 )}
                 <button
