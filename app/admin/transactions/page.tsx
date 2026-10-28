@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { OrderChip, PaymentChip } from "@/components/status-chip";
-import { fetchOrders } from "@/lib/data/api";
+import { deleteOrder, fetchOrders } from "@/lib/data/api";
 import { peso, shortTime } from "@/lib/format";
 import type { Order } from "@/lib/types";
 
@@ -170,7 +170,15 @@ export default function TransactionsPage() {
 
             <button
               type="button"
-              onClick={() => setSelectedOrder(null)}
+              onClick={async () => {
+                try {
+                  await deleteOrder(selectedOrder.id);
+                  setOrders((current) => current.filter((order) => order.id !== selectedOrder.id));
+                  setSelectedOrder(null);
+                } catch (err) {
+                  alert(err instanceof Error ? err.message : "Could not cancel this transaction.");
+                }
+              }}
               className="mt-5 w-full rounded-full border border-cocoa/40 bg-[#f7e9dc] py-3 text-sm font-bold text-cocoa shadow-card hover:bg-[#f0dcc8]"
             >
               Cancel

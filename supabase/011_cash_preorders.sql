@@ -166,5 +166,23 @@ begin
 end;
 $$;
 
+create or replace function public.delete_order(p_order_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not public.is_admin() then
+    raise exception 'Only admins can cancel transactions.';
+  end if;
+
+  delete from public.orders
+  where id = p_order_id;
+end;
+$$;
+
 revoke execute on function public.create_pre_order(jsonb, text, text, text) from public, anon;
 grant execute on function public.create_pre_order(jsonb, text, text, text) to authenticated;
+revoke execute on function public.delete_order(uuid) from public, anon;
+grant execute on function public.delete_order(uuid) to authenticated;

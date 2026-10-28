@@ -527,6 +527,11 @@ export async function verifyPayment(
   if (error) throw new Error(error.message);
 }
 
+export async function deleteOrder(orderId: string): Promise<void> {
+  const { error } = await db().rpc("delete_order", { p_order_id: orderId });
+  if (error) throw new Error(error.message);
+}
+
 export async function setStatus(
   orderId: string,
   status: OrderStatus,
