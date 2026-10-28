@@ -70,6 +70,11 @@ export default function TransactionsPage() {
                 <p className="mt-1 text-xs text-muted">
                   {order.type === "pre_order" ? "Pre-order" : "Walk-in"} · {order.paymentMethod}
                 </p>
+                {order.customerName && (
+                  <p className="mt-2 text-xs font-bold text-brand">
+                    Ordered by {order.customerName}
+                  </p>
+                )}
                 <div className="mt-2 flex flex-wrap gap-2">
                   <PaymentChip status={order.paymentStatus} />
                   <OrderChip status={order.status} />
