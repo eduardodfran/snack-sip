@@ -293,6 +293,11 @@ function OrdersAdmin() {
                     {order.pickupLabel}
                   </p>
                 )}
+                {order.gcashReference && (
+                  <p className="mt-2 text-[10px] font-bold tracking-[0.15em] text-muted uppercase">
+                    Ref: {order.gcashReference}
+                  </p>
+                )}
                 {order.proofUrl && order.paymentMethod === "gcash" && (
                   <div className="mt-3">
                     <p className="mb-1 text-[10px] font-bold tracking-[0.15em] text-muted uppercase">
